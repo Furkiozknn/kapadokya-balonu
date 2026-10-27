@@ -1,36 +1,38 @@
-# Kapadokya Balonu
+<p align="center">
+  <a href="https://furkiozknn.github.io/kapadokya-balonu/"><img src="docs/banner.svg" width="100%" alt="Kapadokya Balonu: a hot-air balloon wind puzzle over the fairy chimneys of Cappadocia at sunrise. Click to play in your browser."></a>
+</p>
 
-**A 3D hot-air balloon wind puzzle over Cappadocia at sunrise.** You never steer sideways: you only heat the envelope
-with the burner to climb or open the parachute vent to sink. The wind blows a different way at every height, so to go
-somewhere you pick the layer that blows there. Fly low over marked spots, drop markers on crosses, photograph
-landmarks from the right height, pick up passengers on hilltops and land softly on the trailer field before the
-propane runs out.
+<p align="center">
+  <a href="https://furkiozknn.github.io/kapadokya-balonu/"><img src="https://img.shields.io/badge/%E2%96%B6_Play_now-in_your_browser-E8590C?style=for-the-badge&labelColor=1B1220" alt="Play now in your browser"></a>
+  <img src="https://img.shields.io/badge/Three.js-r170-F5B342?style=for-the-badge&logo=threedotjs&logoColor=white&labelColor=1B1220" alt="Three.js r170">
+  <img src="https://img.shields.io/badge/built_by-Claude_Opus_5.5-E2C6AB?style=for-the-badge&logo=claude&logoColor=white&labelColor=1B1220" alt="Built by Claude Opus 5.5">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licence-MIT-7CC46A?style=for-the-badge&labelColor=1B1220" alt="MIT licence"></a>
+  <img src="https://img.shields.io/badge/no_install-desktop_%C2%B7_phone-FFF3E6?style=for-the-badge&labelColor=1B1220" alt="No install, desktop and phone">
+</p>
 
-Part of the Claude Game Arena series. One `index.html`, Three.js r170 from a CDN, everything else made in code.
+<p align="center"><b>A 3D hot-air balloon wind puzzle over Cappadocia at sunrise: you never steer sideways, you only burn to climb or vent to sink, and the wind blows a different way at every height, so to go somewhere you pick the layer that blows there.</b></p>
 
-<p align="center"><img src="docs/02-flight.png" width="720" alt="Flying over the fairy chimneys of Uçhisar with the wind ladder, goals and instruments"></p>
+<p align="center">
+  <img src="docs/gameplay.gif" width="640" alt="Kapadokya Balonu gameplay: the bot sinks the balloon through the orange low-pass ring over the fairy chimneys">
+</p>
+
+<p align="center"><b>Play online: <a href="https://furkiozknn.github.io/kapadokya-balonu/">https://furkiozknn.github.io/kapadokya-balonu/</a></b> (desktop and phone, no install)</p>
 
 ## Highlights
 
 - **Wind layers instead of a rudder.** Each flight has its own wind table: four layers stacked by altitude, each with
-  its own direction and speed. Mist streaks drift with each layer and three dozen other balloons ride the layers too,
-  so you can see the wind. The wind ladder on the left shows the live layers, turned to your camera, and paints the
-  layers that blow towards your goal green.
-- **A balloon with lag.** The burner heats the envelope; the lift follows the temperature a few seconds later; the
-  envelope cools by itself. The envelope gauge shows the hover line, so you learn to burn early and stop early.
-  Propane is limited, and a passenger adds weight.
-- **12 flights in 3 regions.** Göreme (village, mosque, launch field, Paşabağ and Love Valley), Uçhisar (the castle
-  rock and Pigeon Valley) and an Ihlara-like canyon with a river and poplars. Weather: calm dawn, gusty, morning fog
-  that lifts as the sun rises, and thermal bubbles at noon.
+  its own direction and speed. Mist streaks and three dozen other balloons ride the layers, so you can see the wind,
+  and the wind ladder paints the layers that blow towards your goal green.
+- **A balloon with lag.** The burner heats the envelope, the lift follows the temperature a few seconds later and the
+  envelope cools by itself, so you learn to burn early and stop early. Propane is limited, and a passenger adds weight.
+- **12 flights in 3 regions.** Göreme, Uçhisar and an Ihlara-like canyon with a river and poplars; calm dawn, gusts,
+  morning fog that lifts as the sun rises, and thermal bubbles at noon.
 - **Five kinds of goals.** Low pass, marker drop, photo from a given height, passenger pickup on a hilltop and the
-  landing, scored for sink rate, distance to the cross and ground speed. Stars for every goal, fuel left and a soft
-  landing: 36 in all.
-- **Living valley.** Flat-shaded fairy chimneys with dark caps and carved cave-house windows, vineyards, apricot
-  orchards, a winding river, birds, a dawn sky that turns from violet to gold, long soft shadows, burner roar and
-  flame light on the envelope.
-- **Played by a bot.** `?auto` flies all 12 flights with the same burner and vent a player has. It plans by simulating
-  short burner/vent plans forward with the same physics and the mean winds shown on the ladder, then re-plans every
-  1.5 s. It earns all 36 stars.
+  landing, scored for sink rate, distance to the cross and ground speed. Up to 36 stars.
+- **Played by a bot.** `?auto` flies all 12 flights with the same burner and vent a player has, planning ahead with the
+  same physics. Measured: **12/12 flights, 36/36 stars**, 60 fps, 27-31 draw calls.
+- **One file, made in code.** One `index.html` with Three.js r170 from a CDN; the valley, the balloons, the sky shader and
+  every sound are generated in code.
 
 ## How to play
 
@@ -44,6 +46,9 @@ orange flags and the white light beam). Touching the ground anywhere else bumps 
 fairy chimney costs damage and frightens the passengers. Drifting out of the valley, wrecking the basket or running out
 of propane away from the field fails the flight.
 
+<details>
+<summary><b>Goals and stars</b></summary>
+
 | Goal | What to do |
 |---|---|
 | Low pass | Cross the orange ring below 25 m above the ground |
@@ -54,6 +59,8 @@ of propane away from the field fails the flight.
 
 **Stars:** every goal met, fuel left at or above the flight's mark (the tick on the fuel bar), and a landing score of
 65 or more. Finishing a flight on the field unlocks the next one.
+
+</details>
 
 ### Controls
 
@@ -99,13 +106,13 @@ calls, errors and `assets`).
 <table>
   <tr>
     <td width="33%"><img src="docs/01-title.png" alt="Title screen"><br><sub>Title screen</sub></td>
+    <td width="33%"><img src="docs/02-flight.png" alt="Flying over the fairy chimneys of Uçhisar with the wind ladder, goals and instruments"><br><sub>Over Uçhisar with the wind ladder</sub></td>
     <td width="33%"><img src="docs/03-region-map.png" alt="Region map with the flight briefing and wind table"><br><sub>Region map and briefing</sub></td>
-    <td width="33%"><img src="docs/04-landing.png" alt="Landing report with stars"><br><sub>Landing report</sub></td>
   </tr>
   <tr>
+    <td><img src="docs/04-landing.png" alt="Landing report with stars"><br><sub>Landing report</sub></td>
     <td><img src="docs/05-group-photo.png" alt="Ending: group photo on the launch field"><br><sub>Ending: the group photo</sub></td>
     <td><img src="docs/06-phone.png" alt="Kapadokya Balonu on a phone over Uçhisar"><br><sub>On a phone</sub></td>
-    <td></td>
   </tr>
 </table>
 
@@ -124,6 +131,9 @@ then open <http://localhost:8000/>.
 Built by **Claude Opus 5.5** with Claude Code from one prompt: [prompts/kapadokya-balonu.md](prompts/kapadokya-balonu.md).
 Everything is generated in code, so there are no asset files and no credits to list.
 
+<details>
+<summary><b>Technical notes</b></summary>
+
 - **Simulation core:** terrain, wind layers, balloon physics, goals and the bot live in one plain script with no
   Three.js or DOM, so the same code runs in a Node harness. The terrain is a 20 m height grid shared by the render mesh
   and the physics, with the same triangulation. The balloon has an envelope temperature (burner +8.5 °C/s, Newton
@@ -138,11 +148,35 @@ Everything is generated in code, so there are no asset files and no credits to l
   when the same checks a player sees say yes.
 - **3D:** flat-shaded vertex-coloured terrain (36k triangles), instanced fairy chimneys, caps, cave windows, houses,
   orchards and vines, 36 instanced balloons, instanced wind streaks and birds, one shadow-casting sun that follows the
-  balloon, a shader sky and one Points pool for dust, leaves and thermal sparkles. About 20-30 draw calls.
+  balloon, a shader sky and one Points pool for dust, leaves and thermal sparkles; 27-31 draw calls measured.
 - **Audio:** Web Audio only: a bağlama-like plucked melody in an Uşşak-like scale over a frame drum in 9/8 aksak, a
   drone, a far-away call to prayer as a soft vowel pad gliding through a Hicaz phrase with echoes (no recording),
   burner roar, vent hiss, wind, birdsong, shutter, thuds and applause.
 
-## Licence
+</details>
+
+Kapadokya Balonu is part of the **Claude Game Arena** series, where each game is built by a Claude model from one
+prompt. The other games: [Hisar](https://furkiozknn.github.io/kale-savunmasi/) ·
+[Çay Ocağı](https://furkiozknn.github.io/cay-ocagi/) · [Çini Ustası](https://furkiozknn.github.io/cini-ustasi/) ·
+[Martı](https://furkiozknn.github.io/marti/) · [Kervan](https://furkiozknn.github.io/kervan/) ·
+[Dolmuş](https://furkiozknn.github.io/dolmus/) · [Peri Golf](https://furkiozknn.github.io/peri-golf/) ·
+[Mehter](https://furkiozknn.github.io/mehter/) · [Boğaz Vapuru](https://furkiozknn.github.io/bogaz-vapuru/) ·
+[Simit Fırını](https://furkiozknn.github.io/simit-firini/) · [Karagöz](https://furkiozknn.github.io/karagoz/) ·
+[Lale Bahçesi](https://furkiozknn.github.io/lale-bahcesi/)
+
+**Round 5:** [Ebru](https://furkiozknn.github.io/ebru/) · [Kırkpınar](https://furkiozknn.github.io/kirkpinar/) ·
+[Çarşı Kaçışı](https://furkiozknn.github.io/carsi-kacisi/)
+
+## Türkçe
+
+**Kapadokya Balonu**, gün doğumunda Kapadokya üzerinde geçen 3D sıcak hava balonu rüzgâr bulmacası. Balonu yana
+süremezsin: yalnız brülörle ısıtıp yükselir ya da paraşüt kapağını açıp alçalırsın; her yükseklikte rüzgâr başka yöne
+eser, gitmek istediğin yöne esen katmanı seçersin. 3 bölgede 12 uçuş; alçak geçiş, işaret bırakma, fotoğraf, yolcu
+alma ve iniş görevleri. Kurulum yok; masaüstünde ve telefonda tarayıcıda oynanır. Claude Opus 5.5 tarafından Claude
+Code ile tek bir prompt'tan yapıldı.
+
+**Oyna:** https://furkiozknn.github.io/kapadokya-balonu/
+
+## License
 
 MIT, see [LICENSE](LICENSE).
