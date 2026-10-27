@@ -167,6 +167,10 @@ prompt. The other games: [Hisar](https://furkiozknn.github.io/kale-savunmasi/) �
 **Round 5:** [Ebru](https://furkiozknn.github.io/ebru/) · [Kırkpınar](https://furkiozknn.github.io/kirkpinar/) ·
 [Çarşı Kaçışı](https://furkiozknn.github.io/carsi-kacisi/)
 
+**Round 6:** [Topkapı Gecesi](https://furkiozknn.github.io/topkapi-gecesi/) ·
+[Hamsi](https://furkiozknn.github.io/hamsi/) · [Pamukkale](https://furkiozknn.github.io/pamukkale/) ·
+[Mimar Sinan](https://furkiozknn.github.io/mimar-sinan/)
+
 ## Türkçe
 
 **Kapadokya Balonu**, gün doğumunda Kapadokya üzerinde geçen 3D sıcak hava balonu rüzgâr bulmacası. Balonu yana
