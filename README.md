@@ -13,7 +13,7 @@
 <p align="center"><b>A 3D hot-air balloon wind puzzle over Cappadocia at sunrise: you never steer sideways, you only burn to climb or vent to sink, and the wind blows a different way at every height, so to go somewhere you pick the layer that blows there.</b></p>
 
 <p align="center">
-  <img src="docs/gameplay.gif" width="640" alt="Kapadokya Balonu gameplay: the bot sinks the balloon through the orange low-pass ring over the fairy chimneys">
+  <img src="docs/gameplay.gif" width="640" alt="Kapadokya Balonu gameplay: the dawn mass launch below the balloon as a pilot balloon climbs and reveals a hidden wind layer">
 </p>
 
 <p align="center"><b>Play online: <a href="https://furkiozknn.github.io/kapadokya-balonu/">https://furkiozknn.github.io/kapadokya-balonu/</a></b> (desktop and phone, no install)</p>
