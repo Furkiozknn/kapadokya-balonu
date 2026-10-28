@@ -18,6 +18,10 @@
 
 <p align="center"><b>Play online: <a href="https://furkiozknn.github.io/kapadokya-balonu/">https://furkiozknn.github.io/kapadokya-balonu/</a></b> (desktop and phone, no install)</p>
 
+<!-- portals:start -->
+<p align="center">Also on: <a href="https://furkiozknn.itch.io/kapadokya-balonu">itch.io</a> &middot; <a href="https://playgama.ai/play/tpk2dodm477izr">Playgama</a></p>
+<!-- portals:end -->
+
 ## Highlights
 
 - **Wind layers instead of a rudder.** Each flight has its own wind table: four layers stacked by altitude, each with
