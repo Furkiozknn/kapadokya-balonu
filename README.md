@@ -23,21 +23,34 @@
 - **Wind layers instead of a rudder.** Each flight has its own wind table: four layers stacked by altitude, each with
   its own direction and speed. Mist streaks and three dozen other balloons ride the layers, so you can see the wind,
   and the wind ladder paints the layers that blow towards your goal green.
+- **Reading the wind is a skill (v2).** From flight 3 the upper layers on the ladder are `?` until you sample them:
+  press `B` to send up a pilot balloon (pibal) that climbs about 4 m/s, drifts with the wind and leaves a smoke trail,
+  revealing each layer it passes (15 s cooldown). Flying into a layer reveals it too.
+- **Gusts you can see coming (v2).** On gusty mornings each layer shows a faint wedge for how far the wind swings and a
+  `speed±spread` reading; windsocks on the launch and landing fields follow the ground wind, and a low rumble comes
+  1-2 s before a strong gust reaches your layer.
+- **Dawn mass launch (v2).** A dozen balloons lie around the launch field, fill up, stand on their burners and lift
+  off one after another in the first 40 seconds; valley walls show banded tuff strata with pale pumice seams and rims.
 - **A balloon with lag.** The burner heats the envelope, the lift follows the temperature a few seconds later and the
   envelope cools by itself, so you learn to burn early and stop early. Propane is limited, and a passenger adds weight.
 - **12 flights in 3 regions.** Göreme, Uçhisar and an Ihlara-like canyon with a river and poplars; calm dawn, gusts,
   morning fog that lifts as the sun rises, and thermal bubbles at noon.
 - **Five kinds of goals.** Low pass, marker drop, photo from a given height, passenger pickup on a hilltop and the
   landing, scored for sink rate, distance to the cross and ground speed. Up to 36 stars.
+- **Valley Notebook (v2).** A good goal photo or a finished flight unlocks a card with a sourced fact about Cappadocia
+  (fairy chimneys, underground cities, the balloon season); the card shows on the polaroid and the landing report.
+- **Daily Flight (v2).** A date-seeded variant of one of the 12 flights with reshuffled winds (same goals); your best
+  score of the day is kept separately and never changes your stars.
 - **Played by a bot.** `?auto` flies all 12 flights with the same burner and vent a player has, planning ahead with the
-  same physics. Measured: **12/12 flights, 36/36 stars**, 60 fps, 27-31 draw calls.
+  same physics. Measured: **12/12 flights, 36/36 stars**, 60 fps, 29-35 draw calls.
 - **One file, made in code.** One `index.html` with Three.js r170 from a CDN; the valley, the balloons, the sky shader and
-  every sound are generated in code.
+  every sound are generated in code. The only files are two small mascot pictures.
 
 ## How to play
 
 > [!TIP]
-> Hold the burner until the balloon lifts, then look at the wind ladder: a green arrow is a layer that blows towards
+> Press **Play** and you are on the launch field: flights 1 and 2 have a four-step coach strip that ticks as you do
+> each step (you can skip it). Hold the burner until the balloon lifts, then look at the wind ladder: a green arrow is a layer that blows towards
 > the goal. Climb or sink into it and let it carry you. The temperature lags: stop burning before you reach the height
 > you want.
 
@@ -70,6 +83,7 @@ of propane away from the field fails the flight.
 | Vent (cool, sink) | hold the blue button | hold `V` |
 | Photo | camera button | `F` |
 | Drop a marker | marker button | `D` |
+| Pilot balloon (reveal winds) | pibal button | `B` |
 | Camera: chase / basket / map | eye button | `C` |
 | Orbit / look around | drag | arrow keys |
 | Zoom | wheel or pinch | `+` / `-` |
@@ -77,8 +91,9 @@ of propane away from the field fails the flight.
 | Pause | pause button | `P` / `Esc` |
 | Music / effects / language | HUD buttons | `M` / `X` / `L` |
 
-Settings are saved in `localStorage` under `arena.kapadokya.settings`, progress (stars, finished flights, best landing
-scores) under `arena.kapadokya.save` and the best star total under `arena.kapadokya.best`. Turkish is the default
+Settings (including the tips switch) are saved in `localStorage` under `arena.kapadokya.settings`, progress (stars,
+finished flights, best landing scores, notebook cards) under `arena.kapadokya.save`, the best star total under
+`arena.kapadokya.best` and the Daily Flight best under `arena.kapadokya.daily`. Saves from v1 load unchanged. Turkish is the default
 language; phones start on the Low quality tier.
 
 <details>
@@ -91,13 +106,14 @@ language; phones start on the Low quality tier.
 | `?sim=N` | fast-forward N seconds before the first frame |
 | `?low` | shadows off, pixel ratio 1, half the particles, wind streaks and other balloons |
 | `?flight=N` | start straight in flight N (1-12) |
+| `?daily=YYYY-MM-DD` | start the Daily Flight of that date (same winds on every reload); `?daily` alone is today |
 | `?speed=N` | game speed 1, 2 or 4 (the bot defaults to 2) |
 | `?lang=en` / `?lang=tr` | language |
 | `?nosave` | do not write to `localStorage` |
-| `?noassets` | accepted; the game ships no asset files, so it changes nothing |
+| `?noassets` | skip the mascot pictures (the only asset files); everything else is generated in code |
 
 The live state is on `window.kapadokya` (screen, flight, altitude, temperature, fuel, goals, stars, bot log, fps, draw
-calls, errors and `assets`).
+calls, errors and `assets`, plus `revealed`, `coach`, `notes`, `daily`, `launch` and `gust`).
 
 </details>
 
@@ -112,7 +128,12 @@ calls, errors and `assets`).
   <tr>
     <td><img src="docs/04-landing.png" alt="Landing report with stars"><br><sub>Landing report</sub></td>
     <td><img src="docs/05-group-photo.png" alt="Ending: group photo on the launch field"><br><sub>Ending: the group photo</sub></td>
-    <td><img src="docs/06-phone.png" alt="Kapadokya Balonu on a phone over Uçhisar"><br><sub>On a phone</sub></td>
+    <td><img src="docs/06-phone.png" alt="Kapadokya Balonu on a phone with the coach strip"><br><sub>On a phone</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/07-notebook.png" alt="Valley Notebook with fact cards"><br><sub>Valley Notebook</sub></td>
+    <td><img src="docs/08-pibal-gust.png" alt="A pilot balloon reveals hidden wind layers on a gusty morning"><br><sub>Pilot balloon and gust wedges</sub></td>
+    <td></td>
   </tr>
 </table>
 
@@ -129,7 +150,26 @@ then open <http://localhost:8000/>.
 ## How it was made
 
 Built by **Claude Opus 5.5** with Claude Code from one prompt: [prompts/kapadokya-balonu.md](prompts/kapadokya-balonu.md).
-Everything is generated in code, so there are no asset files and no credits to list.
+Everything is generated in code; the two mascot pictures and the fact sources are listed in [CREDITS.md](CREDITS.md).
+
+### v2 update
+
+Upgraded by **Claude Opus 5.5** with Claude Code from [prompts/kapadokya-balonu-v2.md](prompts/kapadokya-balonu-v2.md):
+
+- **One click to fly:** Play and Continue start the next open flight straight away; the region map is a title button
+  and stays on the pause menu and the landing report. Flights 1-2 have a coach strip whose four steps tick only on the
+  matching input (lift with the burner, cross a layer line, vent into the green layer, release the burner near the
+  field), with a *Skip tips* button and a Tips switch in Settings.
+- **Pilot balloon:** `B` releases a pibal; from flight 3 unsampled upper layers show `?` (also on the map briefing).
+  It is render-side only, so the simulation core and the bot are unchanged.
+- **Valley Notebook:** six fact cards (title and pause menus) from sourced research, unlocked by goal photos and
+  finished flights, shown on the polaroid and the landing report; saved as `notes` in the existing save.
+- **Dawn mass launch and tuff strata:** 12 balloons inflate and lift off around the launch field; steep walls get five
+  tuff tones in ~6.5 m bands with pumice seams and pale rims, drawn in the terrain shader (no extra draw calls).
+- **Gust telegraph:** spread wedges and `±` speeds on the ladder, windsocks on both fields, a rumble before strong gusts.
+- **Daily Flight:** a date-seeded variant of one flight (winds ±40°, ±2 m/s), best kept in `arena.kapadokya.daily`.
+- **Mascot:** the white Turkish Van kitten peeks over the basket rim on the landing report: it waves after a soft
+  landing (score 65+) and puffs up after a hard bump.
 
 <details>
 <summary><b>Technical notes</b></summary>
@@ -146,9 +186,10 @@ Everything is generated in code, so there are no asset files and no credits to l
   the landing) with the same physics and the mean winds, scores them for reaching the current goal, fuel, obstacle
   clearance and touchdown speed, and flies the best one with burner and vent pulses. It takes photos and drops markers
   when the same checks a player sees say yes.
-- **3D:** flat-shaded vertex-coloured terrain (36k triangles), instanced fairy chimneys, caps, cave windows, houses,
-  orchards and vines, 36 instanced balloons, instanced wind streaks and birds, one shadow-casting sun that follows the
-  balloon, a shader sky and one Points pool for dust, leaves and thermal sparkles; 27-31 draw calls measured.
+- **3D:** flat-shaded vertex-coloured terrain (36k triangles) with tuff strata added in its fragment shader, instanced
+  fairy chimneys, caps, cave windows, houses, orchards and vines, 36 instanced balloons, instanced wind streaks, birds,
+  pilot balloons and windsocks, one shadow-casting sun that follows the balloon, a shader sky and one Points pool for
+  dust, leaves, burner glow, pibal smoke and thermal sparkles; 29-35 draw calls measured.
 - **Audio:** Web Audio only: a bağlama-like plucked melody in an Uşşak-like scale over a frame drum in 9/8 aksak, a
   drone, a far-away call to prayer as a soft vowel pad gliding through a Hicaz phrase with echoes (no recording),
   burner roar, vent hiss, wind, birdsong, shutter, thuds and applause.
@@ -176,7 +217,9 @@ prompt. The other games: [Hisar](https://furkiozknn.github.io/kale-savunmasi/) �
 **Kapadokya Balonu**, gün doğumunda Kapadokya üzerinde geçen 3D sıcak hava balonu rüzgâr bulmacası. Balonu yana
 süremezsin: yalnız brülörle ısıtıp yükselir ya da paraşüt kapağını açıp alçalırsın; her yükseklikte rüzgâr başka yöne
 eser, gitmek istediğin yöne esen katmanı seçersin. 3 bölgede 12 uçuş; alçak geçiş, işaret bırakma, fotoğraf, yolcu
-alma ve iniş görevleri. Kurulum yok; masaüstünde ve telefonda tarayıcıda oynanır. Claude Opus 5.5 tarafından Claude
+alma ve iniş görevleri. v2 ile: tek tıkla kalkış ve ilk iki uçuşta adım adım koç, üst rüzgârları okuyan
+pilot balonu (B), kaynaklı bilgi kartlarıyla Vadi Defteri, şafakta toplu kalkış, sert hamle uyarıları ve Günlük Uçuş.
+Kurulum yok; masaüstünde ve telefonda tarayıcıda oynanır. Claude Opus 5.5 tarafından Claude
 Code ile tek bir prompt'tan yapıldı.
 
 **Oyna:** https://furkiozknn.github.io/kapadokya-balonu/
