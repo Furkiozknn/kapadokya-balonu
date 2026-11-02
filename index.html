@@ -161,9 +161,10 @@ b,.num{font-variant-numeric:tabular-nums}
 .vario::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--ink2)}
 .warn{color:var(--red)!important}
 @media (max-width:760px){
-  .inst{min-width:0;grid-template-columns:auto auto;gap:2px 10px;padding:6px 8px}
-  .inst .big{font-size:22px}
-  .gauge,.vario{width:84px}
+  .inst{min-width:0;max-width:calc(100vw - 170px);grid-template-columns:auto auto;gap:2px 8px;padding:6px 8px}
+  .inst .big{font-size:20px}
+  .inst .sub{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gauge,.vario{width:74px}
 }
 
 /* controls */
@@ -183,7 +184,15 @@ b,.num{font-variant-numeric:tabular-nums}
 .burn.on{box-shadow:0 0 0 6px rgba(255,170,60,.35),0 0 36px 10px rgba(255,140,40,.6);background:radial-gradient(circle at 50% 60%,#ffe08a,#ff8a2a 55%,#c4470a)}
 .vent{width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#5d7fa8,#2f4a6c);border:2px solid #9cc0ea;font-size:12px}
 .vent.on{box-shadow:0 0 0 5px rgba(134,180,238,.35)}
-@media (max-width:760px){ .burn{width:84px;height:84px}.vent{width:62px;height:62px}.cbtn{min-width:48px;height:48px} }
+/* phone portrait: stack the 4 action buttons (Foto/İşaret/Pibal/Takip) into a 2x2 grid above Vent/Burner so they never overlap .inst */
+@media (max-width:760px){
+  .ctl{right:calc(8px + var(--sa-r));bottom:calc(8px + var(--sa-b));gap:6px}
+  .ctl .row{gap:6px}
+  .ctl .row:first-child{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+  .burn{width:82px;height:82px}.vent{width:60px;height:60px}.cbtn{min-width:52px;height:46px;padding:0 5px;font-size:10px}
+  .cbtn kbd{display:none}
+}
+@media (max-height:520px){ .ctl .row:first-child{display:flex} }
 
 /* toasts, photo */
 .toasts{position:fixed;top:calc(76px + var(--sa-t));left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;
@@ -201,7 +210,7 @@ b,.num{font-variant-numeric:tabular-nums}
 .flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:23;transition:opacity .25s}
 .flash.on{opacity:.55;transition:none}
 .hint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(130px + var(--sa-b));padding:6px 14px;font-size:13px;color:var(--ink2);z-index:17;pointer-events:none;text-align:center;max-width:min(90vw,560px)}
-@media (max-width:760px){.hint{bottom:calc(196px + var(--sa-b));font-size:12px}}
+@media (max-width:760px){.hint{bottom:calc(202px + var(--sa-b));font-size:12px}}
 
 /* overlays */
 .overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(20,10,18,.45);
@@ -305,7 +314,7 @@ input[type=range]{flex:1;accent-color:var(--gold-ink);height:44px;margin:0}
 .coach .skip{min-height:44px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--wash);font-size:12px;color:var(--ink2);white-space:nowrap}
 .coach.flash{box-shadow:0 0 0 2px var(--green),0 10px 32px rgba(0,0,0,.35)}
 @media (max-width:760px){
-  .coach{bottom:calc(196px + var(--sa-b));width:94vw}
+  .coach{bottom:calc(202px + var(--sa-b));width:94vw}
   .coach li:not(.now){display:none} .coach li{max-width:none;flex:1} .coach ol{flex:1}
   .coach ol::after{content:attr(data-n);align-self:center;font-size:11px;color:var(--ink2);padding-right:4px}
 }
@@ -1584,10 +1593,7 @@ function buildChimneys() {
     if (y < 18 || y > 72) continue;
     wins.push([x, y + 0.3, z - sgn * 0.8, sgn > 0 ? Math.PI : 0, R() < 0.2 ? 1.6 : 1]);
   }
-  const winG = prep(new THREE.BoxGeometry(1.2, 1.7, 0.7), 0x2e1d15);
-  const win = new THREE.InstancedMesh(winG, new THREE.MeshLambertMaterial({ vertexColors: true }), wins.length);
-  wins.forEach((w, i) => { q.setFromAxisAngle(up, w[3]); M.compose(p.set(w[0], w[1], w[2]), q, s.set(w[4], w[4], 1)); win.setMatrixAt(i, M); });
-  scene.add(win);
+  WORLD.wins = wins;
   WORLD.windows = wins.length;
 }
 function buildVillages() {
@@ -1626,6 +1632,37 @@ function buildVillages() {
   const mosque = new THREE.Mesh(mergeGeometries(parts), new THREE.MeshLambertMaterial({ vertexColors: true }));
   mosque.castShadow = mosque.receiveShadow = true; scene.add(mosque);
   WORLD.houses = houses.length;
+  // Cave, castle and village windows + lantern glow in Göreme and Uçhisar at early dawn, fading as the sun rises (skipped on ?low)
+  const wins = WORLD.wins.slice(), Rw = rng(313);
+  if (!FLAG.low) {
+    for (const h of houses) {
+      if (h[0] >= 580) continue; // only Göreme and Uçhisar villages
+      const hy = ground(h[0], h[1]) - 0.5 + h[3] * 0.56, ca = Math.cos(h[5]), sa = Math.sin(h[5]), dz = h[4] * 0.5;
+      for (const sgn of [-1, 1]) wins.push([h[0] + sa * dz * sgn, hy, h[1] + ca * dz * sgn, h[5], 0.85, 1]);
+    }
+    for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2; wins.push([mx + Math.cos(a) * 1.9, gy + 20.1, mz + Math.sin(a) * 1.9, a, 0.75, 1]); }
+  }
+  WORLD.dawnGlow = { value: FLAG.low || SET.quality === 'low' ? 0 : 1 };
+  const winMat = new THREE.MeshLambertMaterial({ vertexColors: true });
+  if (!FLAG.low) winMat.onBeforeCompile = sh => {
+    sh.uniforms.uLantern = WORLD.dawnGlow; sh.uniforms.uWinDark = { value: new THREE.Color(0x2e1d15) };
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform float uLantern; uniform vec3 uWinDark;')
+      .replace('#include <color_fragment>', '#include <color_fragment>\nfloat wLit = step(0.35, diffuseColor.r); vec3 wGlow = diffuseColor.rgb; diffuseColor.rgb = mix(diffuseColor.rgb, uWinDark, wLit * (1.0 - uLantern * 0.42));')
+      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += wGlow * (wLit * uLantern * 1.45);');
+  };
+  const winG = prep(new THREE.BoxGeometry(1.2, 1.7, 0.7), FLAG.low ? 0x2e1d15 : 0xffffff);
+  const win = new THREE.InstancedMesh(winG, winMat, wins.length);
+  const lTones = [0xffb448, 0xff9128, 0xffd070];
+  wins.forEach((w, i) => {
+    q.setFromAxisAngle(up, w[3]); M.compose(p.set(w[0], w[1], w[2]), q, s.set(w[4], w[4], 1)); win.setMatrixAt(i, M);
+    if (!FLAG.low) {
+      const lit = w[0] < 580 && (w[5] || Rw() < 0.72);
+      win.setColorAt(i, tmpC.setHex(lit ? lTones[(Rw() * 3) | 0] : 0x2e1d15));
+    }
+  });
+  if (!FLAG.low) win.instanceColor.needsUpdate = true;
+  scene.add(win);
 }
 function buildTrees() {
   const R = rng(23), apr = [], vin = [], pop = [];
@@ -2795,58 +2832,111 @@ function openNotes() {
 }
 function closeNotes() { showOnly(G.notesFrom); if (G.notesFrom === 'ov-pause') $('b-resume').focus(); else if (G.notesFrom === 'ov-title') $('b-notes').focus(); }
 function nextOpen() { for (let i = 0; i < NF; i++) if (!PROG.done[i] && unlocked(i)) return i; for (let i = 0; i < NF; i++) if ((PROG.stars[i] || 0) < 3) return i; return 0; }
-// Region map: a shaded relief drawn from the height grid once
+// Region map: hand-drawn cartographic parchment relief + inked surveyor map
 let RELIEF = null;
 function buildRelief() {
   const W2 = 360, H2 = 200, cv = document.createElement('canvas'); cv.width = W2; cv.height = H2;
   const g = cv.getContext('2d'), img = g.createImageData(W2, H2), sx = (C.W.x1 - C.W.x0) / W2, sz = (C.W.z1 - C.W.z0) / H2;
   for (let j = 0; j < H2; j++) for (let i = 0; i < W2; i++) {
     const x = C.W.x0 + (i + 0.5) * sx, z = C.W.z0 + (j + 0.5) * sz, h = ground(x, z);
-    const hx = ground(x + 8, z) - ground(x - 8, z), hz = ground(x, z + 8) - ground(x, z - 8);
-    const shade = clamp(0.92 - hx * 0.022 + hz * 0.016, 0.55, 1.12);
+    const hx = ground(x + 8, z) - ground(x - 8, z), hz = ground(x, z + 8) - ground(x, z - 8), grad = Math.hypot(hx, hz);
+    const grain = (Math.sin(i * 1.7 + j * 2.3) + Math.cos(i * 0.6 - j * 1.4)) * 2.5;
+    let shade = clamp(0.95 - hx * 0.019 + hz * 0.014, 0.62, 1.08);
     const dr = Math.abs(z - C.riverZ(x));
-    let r = 238, gg = 205, b = 164;
-    if (x > 520) { const k = sstep(520, 760, x); r = lerp(r, 226, k); gg = lerp(gg, 190, k); b = lerp(b, 142, k); }
-    const wet = 1 - sstep(20, 70, dr); r = lerp(r, 150, wet); gg = lerp(gg, 170, wet); b = lerp(b, 104, wet);
-    if (dr < 9) { r = 96; gg = 156; b = 186; }
-    const o = (j * W2 + i) * 4; img.data[o] = r * shade; img.data[o + 1] = gg * shade; img.data[o + 2] = b * shade; img.data[o + 3] = 255;
+    let r = 242 + grain, gg = 222 + grain * 0.8, b = 188 + grain * 0.6;
+    if (x > 520) { const k = sstep(520, 760, x); r = lerp(r, 228, k); gg = lerp(gg, 203, k); b = lerp(b, 165, k); }
+    const wet = 1 - sstep(18, 68, dr); r = lerp(r, 178, wet * 0.65); gg = lerp(gg, 184, wet * 0.65); b = lerp(b, 132, wet * 0.65);
+    // sepia topographic contours (every 14 m, bold index contour every 42 m) + cliff hachures
+    const cf = Math.abs(((h / 14) % 1 + 1) % 1 - 0.5), idxC = Math.abs(((h / 42) % 1 + 1) % 1 - 0.5);
+    const cLine = Math.max((1 - sstep(0.02, 0.065 + grad * 0.012, cf)) * 0.22, (1 - sstep(0.018, 0.045 + grad * 0.008, idxC)) * 0.38);
+    const hach = grad > 3.2 ? (0.5 + 0.5 * Math.sin((i * hx + j * hz) * 0.45)) * clamp((grad - 3.2) * 0.06, 0, 0.24) : 0;
+    shade *= 1 - Math.max(cLine, hach);
+    if (dr < 12.5) {
+      const bank = sstep(7.5, 11.5, dr);
+      r = lerp(122, 92, bank) / shade; gg = lerp(158, 62, bank) / shade; b = lerp(164, 38, bank) / shade;
+    }
+    // aged vellum edge foxing
+    const ex = (i / W2 - 0.5) * 2, ey = (j / H2 - 0.5) * 2, vig = 1 - 0.18 * sstep(0.55, 1.25, Math.hypot(ex, ey));
+    const o = (j * W2 + i) * 4; img.data[o] = r * shade * vig; img.data[o + 1] = gg * shade * vig; img.data[o + 2] = b * shade * vig; img.data[o + 3] = 255;
   }
   g.putImageData(img, 0, 0);
-  g.fillStyle = 'rgba(70,40,28,.75)';
-  for (const c of C.CH) { g.beginPath(); g.arc((c.x - C.W.x0) / sx, (c.z - C.W.z0) / sz, 0.9, 0, TAU); g.fill(); }
+  g.fillStyle = 'rgba(84,48,26,.62)';
+  for (const c of C.CH) { g.beginPath(); g.arc((c.x - C.W.x0) / sx, (c.z - C.W.z0) / sz, 0.85, 0, TAU); g.fill(); }
   RELIEF = cv;
 }
 function mapXY(cv, x, z) { return [(x - C.W.x0) / (C.W.x1 - C.W.x0) * cv.width, (z - C.W.z0) / (C.W.z1 - C.W.z0) * cv.height]; }
 function drawMap() {
-  const cv = $('mapcv'), g = cv.getContext('2d');
+  const cv = $('mapcv'), g = cv.getContext('2d'), W = cv.width, H = cv.height;
   if (!RELIEF) buildRelief();
-  g.imageSmoothingEnabled = true; g.drawImage(RELIEF, 0, 0, cv.width, cv.height);
-  g.font = '600 15px Georgia, serif'; g.textAlign = 'center';
+  g.imageSmoothingEnabled = true; g.drawImage(RELIEF, 0, 0, W, H);
+  const INK = '#3a2417', INK2 = 'rgba(58,36,23,.65)', RULE = 'rgba(90,52,24,.38)';
+  // region dividers and serif cartouche titles
   C.REGIONS.forEach((R, i) => {
-    const [x0] = mapXY(cv, R.x0, 0), [x1] = mapXY(cv, R.x1, 0);
-    if (i) { g.strokeStyle = 'rgba(40,20,20,.35)'; g.setLineDash([6, 6]); g.beginPath(); g.moveTo(x0, 0); g.lineTo(x0, cv.height); g.stroke(); g.setLineDash([]); }
-    g.fillStyle = 'rgba(30,14,20,.7)'; g.fillText(L2(R.n), (x0 + x1) / 2, 22);
+    const [x0] = mapXY(cv, R.x0, 0), [x1] = mapXY(cv, R.x1, 0), cx = (x0 + x1) / 2;
+    if (i) { g.strokeStyle = RULE; g.lineWidth = 1.2; g.setLineDash([7, 4, 2, 4]); g.beginPath(); g.moveTo(x0, 8); g.lineTo(x0, H - 8); g.stroke(); g.setLineDash([]); }
+    g.font = '700 15px Georgia, serif'; g.textAlign = 'center'; g.fillStyle = INK; g.fillText(L2(R.n), cx, 23);
+    g.strokeStyle = RULE; g.lineWidth = 1; g.beginPath(); g.moveTo(cx - 38, 27); g.lineTo(cx + 38, 27); g.stroke();
+    g.fillStyle = INK2; g.beginPath(); g.arc(cx, 27, 2, 0, TAU); g.fill();
   });
-  // castle and landmarks
-  for (const k in C.LANDMARKS) { const L = C.LANDMARKS[k], [x, y] = mapXY(cv, L.x, L.z); g.fillStyle = '#4a3026'; g.beginPath(); g.arc(x, y, 3, 0, TAU); g.fill(); }
-  // all flights: landing fields with stars
-  C.FLIGHTS.forEach((D, i) => {
-    const [x, y] = mapXY(cv, D.land.x, D.land.z), st = PROG.stars[i] || 0, open = unlocked(i);
-    g.fillStyle = PROG.done[i] ? '#7cc46a' : open ? '#fff3e6' : 'rgba(255,255,255,.35)'; g.beginPath(); g.arc(x, y, i === G.sel ? 7 : 5, 0, TAU); g.fill();
-    g.fillStyle = '#2a1a14'; g.font = '700 10px system-ui'; g.fillText(String((i % 4) + 1), x, y + 3.5);
-    if (st) { g.fillStyle = '#F5B342'; g.font = '700 10px system-ui'; g.fillText('★'.repeat(st), x, y - 9); }
-  });
-  // the selected flight: start, goals, landing and winds
+  // hand-drawn sepia landmark vignettes & italic labels
+  g.strokeStyle = INK; g.fillStyle = INK; g.lineWidth = 1.25;
+  for (const k in C.LANDMARKS) {
+    const L = C.LANDMARKS[k], [x, y] = mapXY(cv, L.x, L.z);
+    g.beginPath();
+    if (k === 'castle') { g.moveTo(x - 6, y + 4); g.lineTo(x - 4, y - 5); g.lineTo(x - 2, y - 5); g.lineTo(x - 2, y - 3); g.lineTo(x + 2, y - 3); g.lineTo(x + 2, y - 5); g.lineTo(x + 4, y - 5); g.lineTo(x + 6, y + 4); g.closePath(); g.stroke(); }
+    else if (k === 'mosque') { g.arc(x - 1, y + 2, 4, Math.PI, 0); g.moveTo(x + 5, y + 4); g.lineTo(x + 5, y - 6); g.stroke(); }
+    else if (k === 'church' || k === 'selime') { g.moveTo(x - 5, y + 4); g.lineTo(x - 5, y - 1); g.arc(x, y - 1, 5, Math.PI, 0); g.lineTo(x + 5, y + 4); g.stroke(); }
+    else { g.moveTo(x - 4, y + 4); g.lineTo(x - 2, y - 4); g.lineTo(x, y + 4); g.moveTo(x + 1, y + 4); g.lineTo(x + 3, y - 3); g.lineTo(x + 5, y + 4); g.stroke(); g.beginPath(); g.arc(x - 2, y - 5, 1.8, 0, TAU); g.arc(x + 3, y - 4, 1.6, 0, TAU); g.fill(); }
+    g.font = 'italic 600 10.5px Georgia, serif'; g.fillStyle = INK2; g.fillText(L2(L.n).split(' ')[0], x, y + 14); g.fillStyle = INK;
+  }
+  // selected flight surveyor route (inked outer casing + burnt-sienna dashed line + direction chevron)
   const D = C.FLIGHTS[G.sel], [sx, sy] = mapXY(cv, D.start.x, D.start.z);
-  g.strokeStyle = '#E8590C'; g.lineWidth = 2.5; g.setLineDash([5, 4]); g.beginPath(); g.moveTo(sx, sy);
   const pts = D.goals.map(q => q.lm ? C.LANDMARKS[q.lm] : q).concat([D.land]);
+  g.strokeStyle = 'rgba(58,36,23,.45)'; g.lineWidth = 4.2; g.beginPath(); g.moveTo(sx, sy);
   for (const p of pts) { const [x, y] = mapXY(cv, p.x, p.z); g.lineTo(x, y); }
+  g.stroke();
+  g.strokeStyle = '#c84b09'; g.lineWidth = 2.2; g.setLineDash([6, 4]); g.beginPath(); g.moveTo(sx, sy);
+  let px = sx, py = sy;
+  for (const p of pts) { const [x, y] = mapXY(cv, p.x, p.z); g.lineTo(x, y); px = x; py = y; }
   g.stroke(); g.setLineDash([]); g.lineWidth = 1;
-  g.fillStyle = '#E8590C'; g.beginPath(); g.arc(sx, sy, 6, 0, TAU); g.fill();
-  D.goals.forEach((q, k) => { const p = q.lm ? C.LANDMARKS[q.lm] : q, [x, y] = mapXY(cv, p.x, p.z); g.fillStyle = '#F5B342'; g.beginPath(); g.arc(x, y, 6, 0, TAU); g.fill(); g.fillStyle = '#2a1a14'; g.font = '700 10px system-ui'; g.fillText(String(k + 1), x, y + 3.5); });
-  const [lx, ly] = mapXY(cv, D.land.x, D.land.z); g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.moveTo(lx - 7, ly); g.lineTo(lx + 7, ly); g.moveTo(lx, ly - 7); g.lineTo(lx, ly + 7); g.stroke(); g.lineWidth = 1;
-  // compass rose
-  g.fillStyle = 'rgba(30,14,20,.7)'; g.font = '700 12px system-ui'; g.fillText('N', cv.width - 18, cv.height - 34); g.beginPath(); g.moveTo(cv.width - 18, cv.height - 30); g.lineTo(cv.width - 13, cv.height - 18); g.lineTo(cv.width - 23, cv.height - 18); g.fill();
+  // all flights: wax/parchment landing medallions with stars
+  C.FLIGHTS.forEach((F0, i) => {
+    const [x, y] = mapXY(cv, F0.land.x, F0.land.z), st = PROG.stars[i] || 0, open = unlocked(i), sel = i === G.sel;
+    g.fillStyle = PROG.done[i] ? '#68a357' : open ? '#fbf0d9' : 'rgba(235,216,184,.5)';
+    g.strokeStyle = sel ? '#b84307' : INK; g.lineWidth = sel ? 2.2 : 1.2;
+    g.beginPath(); g.arc(x, y, sel ? 7.5 : 5.5, 0, TAU); g.fill(); g.stroke();
+    g.fillStyle = PROG.done[i] ? '#fffaf0' : INK; g.font = '700 10px Georgia, serif'; g.fillText(String((i % 4) + 1), x, y + 3.5);
+    if (st) { g.font = '700 10px system-ui'; g.strokeStyle = INK; g.lineWidth = 2.2; g.strokeText('★'.repeat(st), x, y - 9); g.fillStyle = '#F5B342'; g.fillText('★'.repeat(st), x, y - 9); }
+  });
+  // selected flight launch balloon emblem, numbered brass goal seals and landing crosshairs
+  g.fillStyle = '#c84b09'; g.strokeStyle = INK; g.lineWidth = 1.4; g.beginPath(); g.arc(sx, sy - 2, 5.5, 0, TAU); g.fill(); g.stroke();
+  g.fillStyle = INK; g.fillRect(sx - 2, sy + 4, 4, 2.5);
+  D.goals.forEach((q, k) => {
+    const p = q.lm ? C.LANDMARKS[q.lm] : q, [x, y] = mapXY(cv, p.x, p.z);
+    g.fillStyle = '#F5B342'; g.strokeStyle = INK; g.lineWidth = 1.5; g.beginPath(); g.arc(x, y, 6.5, 0, TAU); g.fill(); g.stroke();
+    g.fillStyle = INK; g.font = '700 10px Georgia, serif'; g.fillText(String(k + 1), x, y + 3.5);
+  });
+  const [lx, ly] = mapXY(cv, D.land.x, D.land.z);
+  g.strokeStyle = '#b84307'; g.lineWidth = 1.6; g.beginPath(); g.arc(lx, ly, 10.5, 0, TAU); g.stroke();
+  // scale bar (500 m) at bottom-left
+  const sbW = 500 / (C.W.x1 - C.W.x0) * W, sbX = 18, sbY = H - 16;
+  g.strokeStyle = INK; g.lineWidth = 1.5; g.beginPath(); g.moveTo(sbX, sbY - 4); g.lineTo(sbX, sbY); g.lineTo(sbX + sbW, sbY); g.lineTo(sbX + sbW, sbY - 4); g.stroke();
+  g.font = '600 10px Georgia, serif'; g.fillStyle = INK; g.fillText('500 m', sbX + sbW / 2, sbY - 4);
+  // ornate cartographic compass rose at bottom-right
+  const rx = W - 32, ry = H - 30;
+  g.strokeStyle = INK; g.lineWidth = 1; g.beginPath(); g.arc(rx, ry, 14, 0, TAU); g.arc(rx, ry, 11.5, 0, TAU); g.stroke();
+  for (let k = 0; k < 8; k++) {
+    const a = k * Math.PI / 4 - Math.PI / 2, r1 = k % 2 ? 9 : 13.5;
+    g.fillStyle = k === 0 ? '#b84307' : k % 2 ? INK2 : INK;
+    g.beginPath(); g.moveTo(rx, ry); g.lineTo(rx + Math.cos(a - 0.22) * 3.2, ry + Math.sin(a - 0.22) * 3.2); g.lineTo(rx + Math.cos(a) * r1, ry + Math.sin(a) * r1); g.closePath(); g.fill();
+  }
+  g.font = '700 10.5px Georgia, serif'; g.fillStyle = INK; g.fillText('N', rx, ry - 16);
+  // double-ruled cartographic border with alternating degree ticks
+  g.strokeStyle = INK; g.lineWidth = 1.5; g.strokeRect(2.5, 2.5, W - 5, H - 5);
+  g.strokeStyle = RULE; g.lineWidth = 1; g.strokeRect(6.5, 6.5, W - 13, H - 13);
+  g.fillStyle = 'rgba(58,36,23,.55)';
+  for (let x = 20; x < W - 20; x += 40) { g.fillRect(x, 2.5, 18, 3.5); g.fillRect(x, H - 6, 18, 3.5); }
+  for (let y = 20; y < H - 20; y += 40) { g.fillRect(2.5, y, 3.5, 18); g.fillRect(W - 6, y, 3.5, 18); }
 }
 function buildRegions() {
   const el = $('regs'); el.innerHTML = '';
@@ -3021,6 +3111,7 @@ function render(dt) {
   else if (play) { kind = F.D.w === 'thermal' ? 'noon' : F.D.w === 'fog' ? 'fog' : 'dawn'; k = clamp(F.t / 320 + (F.D.r * 0.12), 0, 1); }
   else k = 0.15 + 0.1 * Math.sin(G.time * 0.05);
   applySky(kind, k);
+  if (WORLD.dawnGlow) WORLD.dawnGlow.value = (FLAG.low || SET.quality === 'low' || kind === 'noon') ? 0 : 1 - sstep(0.08, 0.62, k);
   const fogW = play && F.D.w === 'fog';
   if (fogW) { const lift = clamp(F.t / 420, 0, 0.7); scene.fog.near = lerp(80, 400, lift); scene.fog.far = lerp(800, 2600, lift); }
   else { scene.fog.near = kind === 'noon' ? 1400 : 900; scene.fog.far = kind === 'noon' ? 5200 : 4200; }
