@@ -2896,7 +2896,7 @@ const KEY = 'arena.kapadokya.';
 function load(k, def) { try { const v = localStorage.getItem(KEY + k); return v ? Object.assign(def, JSON.parse(v)) : def; } catch (e) { return def; } }
 function store(k, v) { if (FLAG.nosave || FLAG.auto) return; try { localStorage.setItem(KEY + k, JSON.stringify(v)); } catch (e) { /* private mode */ } }
 const isPhone = matchMedia('(pointer:coarse)').matches && Math.min(screen.width, screen.height) < 820;
-const SET = load('settings', { master: 0.8, music: 0.6, sfx: 0.8, lang: 'tr', quality: isPhone ? 'low' : 'high', musicOn: true, sfxOn: true, muted: false, tips: true });
+const SET = load('settings', { master: 0.8, music: 0.6, sfx: 0.8, lang: 'tr', quality: isPhone ? 'low' : 'high', musicOn: true, sfxOn: true, muted: false, tips: true, haptics: true });
 if (FLAG.lang === 'tr' || FLAG.lang === 'en') SET.lang = FLAG.lang;
 if (FLAG.low) SET.quality = 'low';
 const NF = C.FLIGHTS.length;
@@ -4006,7 +4006,15 @@ function handleEvents(F) {
       }
       case 'hit': toast(t('hit'), 'bad'); sfx.thud(1); sfx.scream(); if (!G.reduced) G.cam.shake = 0.6; puff(F.S.x, F.S.y + 1, F.S.z, 16, 0xe8c09a, 3, 3); break;
       case 'tree': sfx.rustle(); for (let i = 0; i < 4; i++) emit(F.S.x + (Math.random() - 0.5) * 3, F.S.y, F.S.z + (Math.random() - 0.5) * 3, (Math.random() - 0.5) * 3, 1.5, (Math.random() - 0.5) * 3, 1.2, 1.2, 0x7f9b3e, 0.9, 0); if (!G.lastToast.tree || G.time - G.lastToast.tree > 6) { G.lastToast.tree = G.time; toast(t('tree'), 'bad'); } break;
-      case 'bump': sfx.thud(Math.min(1, e.vy / 3)); puff(F.S.x, F.S.y, F.S.z, 18, 0xdcb48c, 5, 5); if (e.vy > 1.4) { toast(t('bump'), 'bad'); if (!G.reduced) G.cam.shake = 0.4; } break;
+      case 'bump':
+        sfx.thud(Math.min(1, e.vy / 3)); puff(F.S.x, F.S.y, F.S.z, 18, 0xdcb48c, 5, 5);
+        if (e.vy > 1.4) {
+          toast(t('bump'), 'bad'); if (!G.reduced) G.cam.shake = 0.4;
+          if (SET.haptics && typeof navigator !== 'undefined' && navigator.vibrate) {
+            try { navigator.vibrate(50); } catch (err) {}
+          }
+        }
+        break;
       case 'pax': toast(t('pax'), 'good'); sfx.cheer(); PLAYER.pax.visible = true; break;
       case 'fuelLow': toast(t('fuelLow'), 'bad'); sfx.beep(); break;
       case 'fuelOut': toast(t('fuelOut'), 'bad'); sfx.beep(); sfx.beep(0.25); break;
@@ -4511,7 +4519,13 @@ canvas.addEventListener('wheel', e => { e.preventDefault(); zoom(e.deltaY > 0 ? 
 function zoom(f) { if (VF.on) { VF.fov = clamp(VF.fov * f, 28, 68); return; } if (G.cam.mode === 'map') G.cam.mapH = clamp(G.cam.mapH * f, 250, 1600); else G.cam.dist = clamp(G.cam.dist * f, 22, 420); }
 function holdButton(id, key) {
   const el = $(id);
-  const on = e => { e.preventDefault(); audioInit(); G.btn[key] = true; try { el.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointer */ } };
+  const on = e => {
+    e.preventDefault(); audioInit(); G.btn[key] = true;
+    if (SET.haptics && typeof navigator !== 'undefined' && navigator.vibrate) {
+      try { navigator.vibrate(key === 'burn' ? 30 : 15); } catch (err) {}
+    }
+    try { el.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointer */ }
+  };
   const off = () => { G.btn[key] = false; };
   el.addEventListener('pointerdown', on); el.addEventListener('pointerup', off); el.addEventListener('pointercancel', off); el.addEventListener('lostpointercapture', off);
   el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); G.btn[key] = true; } });
