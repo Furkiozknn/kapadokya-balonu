@@ -5086,10 +5086,11 @@ function render(dt) {
     const S = F.S; fx = S.x; fy = S.y; fz = S.z;
     PLAYER.grp.position.set(S.x, S.y, S.z);
     PLAYER.grp.rotation.y += gdt * 0.02;
-    const burning = G.inp && G.inp.burn && S.fuel > 0 && !F.over;
-    PLAYER.heat += ((burning ? 1 : 0) - PLAYER.heat) * Math.min(1, dt * 8);
+    const burning = (G.keys.burn || G.btn.burn || G.mouseBurn || (G.inp && G.inp.burn)) && S.fuel > 0 && !F.over;
+    PLAYER.heat += ((burning ? 1 : 0) - PLAYER.heat) * Math.min(1, dt * 12);
     PLAYER.flame.visible = PLAYER.heat > 0.05; PLAYER.flame.scale.set(1.1 + PLAYER.heat * 0.6, (1.6 + PLAYER.heat * 2.6) * (0.9 + Math.random() * 0.2), 1);
-    PLAYER.light.intensity = PLAYER.heat * 60; PLAYER.envMat.emissiveIntensity = PLAYER.heat * 0.28 + clamp((S.T - 60) / 64, 0, 1) * 0.05;
+    PLAYER.light.intensity = PLAYER.heat * 60;
+    PLAYER.envMat.emissiveIntensity = (burning ? 0.85 : 0.05) + PLAYER.heat * 0.45 + clamp((S.T - 50) / 70, 0, 1) * 0.1;
     if (burning && Math.random() < 0.3) emit(S.x + (Math.random() - 0.5), S.y + 5, S.z + (Math.random() - 0.5), 0, 4, 0, 0.35, 1.1, 0xffc060, 0.7, 0);
   } else if (G.screen === 'end') {
     const L = C.REGIONS[0].launch; fx = L.x; fz = L.z; fy = ground(L.x, L.z);
