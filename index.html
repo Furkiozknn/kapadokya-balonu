@@ -979,6 +979,40 @@ b, .num { font-variant-numeric: tabular-nums; }
 
 .flash { position: fixed; inset: 0; background: #FFF; opacity: 0; pointer-events: none; z-index: 23; transition: opacity .25s; }
 .flash.on { opacity: .65; transition: none; }
+
+/* Golden Hour Photo: viewfinder with a rule-of-thirds grid */
+.vf { position: fixed; inset: 0; z-index: 20; pointer-events: none; }
+.vf-grid i { position: absolute; background: rgba(255, 247, 237, 0.42); box-shadow: 0 0 2px rgba(0, 0, 0, 0.5); }
+.vf-grid i:nth-child(1), .vf-grid i:nth-child(2) { top: 0; bottom: 0; width: 1px; }
+.vf-grid i:nth-child(1) { left: 33.333%; } .vf-grid i:nth-child(2) { left: 66.667%; }
+.vf-grid i:nth-child(3), .vf-grid i:nth-child(4) { left: 0; right: 0; height: 1px; }
+.vf-grid i:nth-child(3) { top: 33.333%; } .vf-grid i:nth-child(4) { top: 66.667%; }
+.vf-c { position: absolute; width: 34px; height: 34px; border: 0 solid var(--gold-ink); }
+.vf-c.tl { left: 18px; top: 18px; border-width: 3px 0 0 3px; } .vf-c.tr { right: 18px; top: 18px; border-width: 3px 3px 0 0; }
+.vf-c.bl { left: 18px; bottom: 18px; border-width: 0 0 3px 3px; } .vf-c.br { right: 18px; bottom: 18px; border-width: 0 3px 3px 0; }
+.vf-lvl { position: absolute; left: 50%; top: 50%; width: 120px; height: 2px; margin-left: -60px; background: var(--gold-ink); box-shadow: 0 0 4px rgba(0, 0, 0, 0.6); }
+.vf-lvl.ok { background: var(--green); }
+.vf-top { position: absolute; left: 50%; top: calc(26px + var(--sa-t, 0px)); transform: translateX(-50%); display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  font: 700 13px var(--font-sans); color: var(--ink); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); max-width: calc(100vw - 120px); }
+.vf-top .gold { color: var(--gold-ink); }
+.vf-help { position: absolute; left: 50%; bottom: 30px; transform: translateX(-50%); font: 600 12px var(--font-sans); color: var(--ink2);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); text-align: center; max-width: calc(100vw - 200px); }
+.vf-res { position: absolute; left: 50%; top: 64px; transform: translateX(-50%); padding: 10px 14px; border-radius: 12px; text-align: center; min-width: 220px; }
+.vf-res b { display: block; font: 700 22px var(--font-title); color: var(--gold-ink); }
+.vf-res span { display: inline-block; margin: 2px 5px; font-size: 12px; color: var(--ink2); }
+.vf-btns { position: absolute; right: calc(18px + var(--sa-r)); bottom: calc(60px + var(--sa-b)); display: flex; flex-direction: column; gap: 12px; align-items: center; pointer-events: auto; }
+.vf-shoot { width: 68px; height: 68px; border-radius: 50%; border: 4px solid var(--ink); background: rgba(255, 210, 120, 0.85); box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.35), 0 6px 16px rgba(0, 0, 0, 0.45); touch-action: manipulation; }
+.vf-shoot:active { transform: scale(0.94); }
+.vf-shoot:disabled { opacity: .35; }
+#ui.vf-on .ladder, #ui.vf-on .gpanel, #ui.vf-on .inst, #ui.vf-on .ctl, #ui.vf-on .hint, #ui.vf-on .coach, #ui.vf-on .topbar { visibility: hidden; }
+.shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.shot { margin: 0; border: 1px solid var(--line); border-radius: 12px; padding: 8px; background: var(--wash); }
+.shot img, .shot .noimg { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 6px; background: #18121E; }
+.shot figcaption { margin-top: 6px; font-size: 12px; color: var(--ink2); line-height: 1.4; }
+.shot figcaption b { font: 700 16px var(--font-title); color: var(--gold-ink); margin-right: 6px; }
+.rshot { display: flex; gap: 10px; align-items: center; margin: 8px 0; font-size: 13px; color: var(--ink2); }
+.rshot img { width: 96px; height: 64px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); }
+@media (max-width: 700px) { .shots { grid-template-columns: repeat(2, 1fr); } .vf-help { display: none; } }
 .pfact {
   position: fixed;
   left: 50%;
@@ -1687,6 +1721,7 @@ input[type=range] {
     <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="13" r="4.5" fill="currentColor"/><path d="M12 3v3M4.5 6.5l2 2M19.5 6.5l-2 2M2 14h3M19 14h3M3 20h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
     <symbol id="i-chim" viewBox="0 0 24 24"><path d="M9 21l1.2-12h3.6L15 21z" fill="currentColor" opacity=".75"/><path d="M8 9.5Q12 3 16 9.5z" fill="currentColor"/><path d="M2 21h20" stroke="currentColor" stroke-width="2"/></symbol>
     <symbol id="i-cave" viewBox="0 0 24 24"><path d="M3 21V11a9 9 0 0118 0v10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M8 21v-5a4 4 0 018 0v5" fill="currentColor"/><path d="M1 21h22" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-frame" viewBox="0 0 24 24"><path d="M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M9.3 4v16M14.7 4v16M4 9.3h16M4 14.7h16" stroke="currentColor" stroke-width="1" opacity=".6"/><circle cx="14.7" cy="9.3" r="2.2" fill="currentColor"/></symbol>
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
   </defs>
 </svg>
@@ -1728,6 +1763,7 @@ input[type=range] {
       <button class="cbtn" id="c-view"><kbd>C</kbd><svg><use href="#i-view"/></svg><span id="c-viewn"></span></button>
     </div>
     <div class="row">
+      <button class="cbtn" id="c-golden"><kbd>K</kbd><svg><use href="#i-frame"/></svg><span id="c-goldenn"></span></button>
       <button class="cbtn vent" id="c-vent"><kbd>V</kbd><svg><use href="#i-vent"/></svg><span data-t="vent"></span></button>
       <button class="cbtn burn" id="c-burn"><kbd>Space</kbd><svg><use href="#i-flame"/></svg><span data-t="burner"></span></button>
     </div>
@@ -1738,6 +1774,18 @@ input[type=range] {
   <div class="toasts" id="toasts"></div>
   <div class="flash" id="flash"></div>
   <div class="polaroid" id="polaroid" hidden><canvas id="snap" width="330" height="219"></canvas><span id="snap-t"></span></div>
+  <div class="vf" id="vf" hidden>
+    <div class="vf-grid"><i></i><i></i><i></i><i></i></div>
+    <div class="vf-c tl"></div><div class="vf-c tr"></div><div class="vf-c bl"></div><div class="vf-c br"></div>
+    <div class="vf-lvl" id="vf-lvl"></div>
+    <div class="vf-top" id="vf-top"></div>
+    <div class="vf-res glass" id="vf-res" hidden></div>
+    <div class="vf-help" data-t="vfHelp"></div>
+    <div class="vf-btns">
+      <button class="cbtn" id="vf-close" data-tt="vfClose"><svg><use href="#i-x"/></svg></button>
+      <button class="vf-shoot" id="vf-shoot" data-tt="vfShoot"></button>
+    </div>
+  </div>
   <div id="dbg" hidden></div>
 
   <!-- Title -->
@@ -1755,6 +1803,7 @@ input[type=range] {
           <button class="btn" id="b-daily"><svg><use href="#i-sun"/></svg><span data-t="dailyFlight"></span></button>
           <button class="btn" id="b-tmap"><svg><use href="#i-map"/></svg><span data-t="mapShort"></span></button>
           <button class="btn" id="b-notes"><svg><use href="#i-book"/></svg><span data-t="notebook"></span></button>
+          <button class="btn" id="b-gallery"><svg><use href="#i-frame"/></svg><span data-t="gallery"></span></button>
         </div>
         <div class="daily" id="daily-line"></div>
         <div class="row" style="justify-content:center">
@@ -1822,6 +1871,15 @@ input[type=range] {
     </div>
   </div>
 
+  <!-- Golden Hour album -->
+  <div class="overlay" id="ov-gallery" hidden>
+    <div class="panel glass wide">
+      <div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0" data-t="galTitle"></h2><span id="gal-count" class="sub" style="color:var(--ink2)"></span></div>
+      <div class="shots" id="shots"></div>
+      <div class="row" style="justify-content:center;margin-top:12px"><button class="btn primary" id="b-gclose"><svg><use href="#i-back"/></svg><span data-t="back"></span></button></div>
+    </div>
+  </div>
+
   <!-- Flight result -->
   <div class="sheet" id="ov-result" hidden>
     <div class="mascot" id="r-mascot" hidden><img id="r-cat" alt=""><div class="rim"></div></div>
@@ -1832,6 +1890,7 @@ input[type=range] {
       <div class="slist" id="r-list"></div>
       <div class="rec" id="r-rec" hidden></div>
       <div class="rfact" id="r-fact" hidden></div>
+      <div class="rshot" id="r-shot" hidden></div>
       <div class="row" style="justify-content:flex-end">
         <button class="btn" id="b-rmap"><svg><use href="#i-map"/></svg><span data-t="regionMap"></span></button>
         <button class="btn" id="b-retry"><svg><use href="#i-restart"/></svg><span data-t="retry"></span></button>
@@ -2563,6 +2622,14 @@ const I18N = {
     layerSeen: 'Katman okundu: {h} m üstü', gustWarn: 'Sert hamle geliyor!',
     dailyTitle: 'Günlük Uçuş · {d}', dailyBest: 'Bugünün en iyisi: {s} puan · {st} yıldız', dailyNone: 'Bugün: {f} · rüzgârlar karıştı',
     dailySub: 'Günlük Uçuş {d} · {f} · en iyi {s}', dailyRec: 'Günün rekoru!',
+    golden: 'Altın Saat', goldenBtn: 'Altın Saat fotoğrafı (K)', vfShoot: 'Deklanşör (K / Enter)', vfClose: 'Vizörü kapat (Esc)',
+    vfFilm: 'Film {n}/{m}', vfSlow: 'Ağır çekim {s} sn', vfSlowOut: 'Ağır çekim hakkı bitti', vfSun: 'Güneş {e}°', vfGold: 'altın ışık', vfHarsh: 'sert ışık',
+    vfLevel: 'Ufuk {r}°', vfHelp: 'K / Enter: çek · ok tuşları ya da sürükle: kadraj · + / −: yakınlaş · Esc: kapat · brülör ve supap çalışır',
+    noFilm: 'Film bitti: her uçuşta {m} kare', pLight: 'Işık', pThirds: 'Üçte bir', pHorizon: 'Ufuk', pVariety: 'Çeşit/mesafe',
+    shotScore: 'Kare puanı {s}/100', shotSaved: 'Albüme girdi!', k_chimney: 'peribacası', k_balloon: 'balon', k_landmark: 'yapı', k_none: 'konu yok', subjLbl: 'Konu',
+    gallery: 'Albüm', galTitle: 'Altın Saat Albümü', galCount: '{n}/{m} kare',
+    galEmpty: 'Henüz kare yok. Uçuşta K ile vizörü aç; güneş alçakken bir peribacasını ya da balonu üçte bir noktasına koy, ufku düz tut.',
+    resShot: 'Altın saat: en iyi kare {s}/100 · {n} kare çekildi', flightLbl: 'Uçuş {n}',
   },
   en: {
     subtitle: 'Sunrise over the fairy chimneys, a wind puzzle', play: 'Play', continue: 'Continue', settings: 'Settings', regionMap: 'Region Map',
@@ -2601,6 +2668,14 @@ const I18N = {
     layerSeen: 'Layer read: above {h} m', gustWarn: 'Strong gust coming!',
     dailyTitle: 'Daily Flight · {d}', dailyBest: 'Best today: {s} points · {st} stars', dailyNone: 'Today: {f} · winds reshuffled',
     dailySub: 'Daily Flight {d} · {f} · best {s}', dailyRec: 'Best of the day!',
+    golden: 'Golden Hour', goldenBtn: 'Golden Hour photo (K)', vfShoot: 'Shutter (K / Enter)', vfClose: 'Close the viewfinder (Esc)',
+    vfFilm: 'Film {n}/{m}', vfSlow: 'Slow motion {s} s', vfSlowOut: 'Slow motion used up', vfSun: 'Sun {e}°', vfGold: 'golden light', vfHarsh: 'harsh light',
+    vfLevel: 'Horizon {r}°', vfHelp: 'K / Enter: shoot · arrows or drag: frame · + / −: zoom · Esc: close · burner and vent still work',
+    noFilm: 'Out of film: {m} frames per flight', pLight: 'Light', pThirds: 'Thirds', pHorizon: 'Horizon', pVariety: 'Variety/range',
+    shotScore: 'Shot score {s}/100', shotSaved: 'Added to the album!', k_chimney: 'fairy chimney', k_balloon: 'balloon', k_landmark: 'landmark', k_none: 'no subject', subjLbl: 'Subject',
+    gallery: 'Album', galTitle: 'Golden Hour Album', galCount: '{n}/{m} shots',
+    galEmpty: 'No shots yet. In flight press K for the viewfinder; while the sun is low, put a fairy chimney or a balloon on a thirds point and keep the horizon level.',
+    resShot: 'Golden hour: best shot {s}/100 · {n} frames taken', flightLbl: 'Flight {n}',
   },
 };
 function t(k, vars) {
@@ -3441,6 +3516,7 @@ function startFlight(i, daily) {
   G.keys.burn = G.keys.vent = false; G.btn.burn = G.btn.vent = false; G.mouseBurn = false;
   G.flightNotes = []; G.gustT = 0; G.gustCD = 0; G.gustRow = -1;
   if (!G.daily) { PROG.last = i; saveProg(); }
+  resetVF();
   resetReveal(G.F); placeSocks(G.F); resetCoach();
   buildMarkers(G.F); buildLadder(G.F); buildGoalPanel(G.F); tintStreaks();
   for (const b of CROWD.list) b.init = false;
@@ -3605,6 +3681,10 @@ function showResult() {
   const nid = G.flightNotes[G.flightNotes.length - 1], own = PROG.notes.length ? PROG.notes[G.idx % PROG.notes.length] : null, f = factOf(nid || own);
   $('r-fact').hidden = !f;
   if (f) $('r-fact').innerHTML = `<b>${t(nid ? 'newCard' : 'didYouKnow')} · ${L2(f.n)}</b>${factText(f)}`;
+  // Golden Hour: the best frame of this flight
+  const bs = VF.shots.reduce((a, b) => (!a || b.s > a.s ? b : a), null), rs = $('r-shot');
+  rs.hidden = !bs;
+  if (bs) { const im = safeImg(bs.img); rs.innerHTML = (im ? `<img src="${im}" alt="${t('golden')}">` : '') + `<span>${t('resShot', { s: bs.s, n: VF.shots.length })}</span>`; }
   // mascot: waves on a soft landing, puffs up after a hard bump or a failed flight
   const cat = $('r-mascot'), soft = r.ok && r.score >= 65, img = MASCOT[soft ? 'wave' : 'puff'];
   cat.hidden = !img; cat.className = 'mascot ' + (soft ? 'wave' : 'puff');
@@ -3668,6 +3748,7 @@ function updateCamera(dt) {
     if (_v2.y < gy) _v2.y = gy;
     camera.position.copy(_v2); camera.lookAt(c.tx, c.ty, c.tz);
   }
+  if (VF.on) { camera.fov = VF.fov; camera.rotateZ(VF.roll * D2R); }
   camera.updateProjectionMatrix();
   PLAYER.basket.visible = c.mode !== 'basket';
 }
@@ -3780,6 +3861,7 @@ function updateHUD(dt, force) {
   $('i-dmg').textContent = `${t('damage')} ${Math.round(F.damage)}% · ${mood(F.fright)}`;
   // controls
   $('c-burn').classList.toggle('on', !!(G.inp && G.inp.burn && S.fuel > 0)); $('c-vent').classList.toggle('on', !!(G.inp && G.inp.vent));
+  $('c-goldenn').textContent = `${t('golden')} ${VF.film}`; $('c-golden').disabled = VF.film <= 0;
   $('c-dropn').textContent = `${t('drop')} ${F.markers}`; $('c-drop').disabled = F.markers <= 0;
   const photoReady = F.goals.some(g => g.t === 'photo' && !g.done && C.photoCheck(F, g, S) === 'ok');
   $('c-photo').classList.toggle('ready', photoReady);
@@ -3833,6 +3915,174 @@ function takeSnapshot() {
 }
 
 // ---------------------------------------------------------------------------
+// Golden Hour Photo: K opens a viewfinder (basket view, thirds grid, slow motion from a per-flight budget).
+// Each frame is scored from what the camera sees: sun height, the main subject on a thirds point,
+// horizon on a third and level, and subject variety and range. The best GOLD.keep shots are kept.
+// ---------------------------------------------------------------------------
+const GOLD = { film: 4, slow: 12, rate: 0.25, keep: 6 };
+const VF = { on: false, film: GOLD.film, slowLeft: GOLD.slow, fov: 50, prevMode: null, prevPitch: 0, roll: 0, shots: [], thumbReq: null, resT: null, slowMsg: false };
+const ALBUM = load('album', { shots: [] });
+if (!Array.isArray(ALBUM.shots)) ALBUM.shots = [];
+const THIRDS = [[1 / 3, 1 / 3], [2 / 3, 1 / 3], [1 / 3, 2 / 3], [2 / 3, 2 / 3]];
+// Pure scoring, 100 points: light 25, main subject on a thirds point 35, horizon 20 (on a third 12, level 8), variety and range 20.
+// m = { sunEl: degrees, roll: degrees, horizonV: 0..1 from the top or null when out of frame,
+//       subjects: [{ kind, u, v (0..1 from top left), dist (m), size (apparent, rad) }] }
+function scoreFrame(m) {
+  const light = Math.round(25 * clamp((40 - m.sunEl) / 28, 0, 1)); // full at 12 deg or lower, none at 40 deg
+  let main = null;
+  for (const s of m.subjects) if (!main || s.size > main.size) main = s;
+  let thirds = 0, td = null;
+  if (main) {
+    td = Math.min(...THIRDS.map(([u, v]) => Math.hypot(main.u - u, main.v - v)));
+    thirds = 35 * clamp(1 - td / 0.18, 0, 1);
+  }
+  const hv = m.horizonV;
+  const place = hv == null ? 4 : 12 * clamp(1 - Math.min(Math.abs(hv - 1 / 3), Math.abs(hv - 2 / 3)) / 0.15, 0, 1);
+  const level = 8 * clamp(1 - Math.abs(m.roll) / 6, 0, 1);
+  const kinds = new Set(m.subjects.map(s => s.kind)).size;
+  const range = main ? clamp((main.dist - 25) / 35, 0, 1) * clamp(1 - (main.dist - 450) / 500, 0, 1) : 0;
+  const parts = { light, thirds: Math.round(thirds), horizon: Math.round(place + level), variety: Math.round(4 * Math.min(3, kinds) + 8 * range) };
+  return { score: parts.light + parts.thirds + parts.horizon + parts.variety, parts, main: main ? { kind: main.kind, name: main.name || null, u: +main.u.toFixed(3), v: +main.v.toFixed(3), dist: main.dist, td: +td.toFixed(3) } : null, kinds };
+}
+const _pv = new THREE.Vector3(), _fw = new THREE.Vector3();
+// subjects in front of the camera and inside the frame, with their apparent size
+function frameSubjects() {
+  const out = [], cp = camera.position;
+  camera.getWorldDirection(_fw);
+  const add = (kind, x, y, z, h, minSize, name) => {
+    const dx = x - cp.x, dy = y - cp.y, dz = z - cp.z, dist = Math.hypot(dx, dy, dz);
+    if (dist < 8 || dx * _fw.x + dy * _fw.y + dz * _fw.z <= 0) return;
+    const size = h / dist; if (size < minSize) return;
+    _pv.set(x, y, z).project(camera);
+    if (Math.abs(_pv.x) > 0.97 || Math.abs(_pv.y) > 0.97) return;
+    out.push({ kind, u: (_pv.x + 1) / 2, v: (1 - _pv.y) / 2, dist: Math.round(dist), size, name });
+  };
+  for (const c of C.CH) add('chimney', c.x, c.b + c.h * 0.7, c.z, c.h, 0.035);
+  for (const b of CROWD.list) add('balloon', b.x, b.y + 4.4 * b.s, b.z, 20 * b.s, 0.03);
+  for (const k in C.LANDMARKS) { const L = C.LANDMARKS[k]; add('landmark', L.x, ground(L.x, L.z) + 12, L.z, 45, 0.03, k); }
+  return out;
+}
+// where the horizon (eye level, straight ahead) crosses the frame centre, 0..1 from the top; null when out of frame
+function horizonV() {
+  const cp = camera.position, y = G.cam.yaw * D2R;
+  _pv.set(cp.x + Math.sin(y) * 5000, cp.y, cp.z - Math.cos(y) * 5000).project(camera);
+  const v = (1 - _pv.y) / 2;
+  return v > 0.02 && v < 0.98 ? v : null;
+}
+function measureFrame() {
+  if (G.simming) updateCamera(0);
+  camera.updateMatrixWorld(true);
+  return { sunEl: Math.asin(clamp(SUN_DIR.y, -1, 1)) / D2R, roll: VF.roll, horizonV: horizonV(), subjects: frameSubjects() };
+}
+function vfSlowRate() { return VF.on && VF.slowLeft > 0 && !G.simming ? GOLD.rate : 1; }
+function openVF() {
+  const F = G.F; if (!F || F.over || G.screen !== 'play' || G.paused || VF.on) return;
+  if (VF.film <= 0) { toast(t('noFilm', { m: GOLD.film }), 'bad'); sfx.beep(); return; }
+  VF.on = true; VF.prevMode = G.cam.mode; VF.prevPitch = G.cam.pitch; VF.fov = 50;
+  if (G.cam.mode !== 'basket') { G.cam.mode = 'basket'; G.cam.pitch = 0.12; }
+  $('vf').hidden = false; $('vf-res').hidden = true; $('ui').classList.add('vf-on'); $('polaroid').hidden = true;
+  updateVF();
+  canvas.focus();
+}
+function closeVF() {
+  if (!VF.on) return;
+  VF.on = false; VF.thumbReq = null;
+  if (VF.prevMode) { G.cam.mode = VF.prevMode; G.cam.pitch = VF.prevPitch; }
+  $('vf').hidden = true; $('ui').classList.remove('vf-on'); clearTimeout(VF.resT);
+  $('c-viewn').textContent = t('cam_' + G.cam.mode); canvas.focus();
+}
+function placeName(sh) {
+  if (sh.lm && C.LANDMARKS[sh.lm]) return L2(C.LANDMARKS[sh.lm].n);
+  const D = C.FLIGHTS[sh.f]; return D ? L2(C.REGIONS[D.r].n) : '';
+}
+function shootVF() {
+  const F = G.F; if (!VF.on || !F || F.over) return;
+  if (VF.film <= 0) { toast(t('noFilm', { m: GOLD.film }), 'bad'); return; }
+  VF.film--;
+  const m = measureFrame(), r = scoreFrame(m), S = F.S;
+  // the nearest landmark names the place when the main subject is not one
+  let lm = r.main && r.main.name, bd = 900;
+  if (!lm) for (const k in C.LANDMARKS) { const L = C.LANDMARKS[k], d = Math.hypot(L.x - S.x, L.z - S.z); if (d < bd) { bd = d; lm = k; } }
+  const shot = { s: r.score, p: r.parts, k: r.main ? r.main.kind : null, lm: lm || null, f: G.idx, d: todayStr(), el: Math.round(m.sunEl), img: '' };
+  VF.shots.push(shot);
+  VF.last = { ...r, sunEl: +m.sunEl.toFixed(1), roll: +m.roll.toFixed(2), horizonV: m.horizonV == null ? null : +m.horizonV.toFixed(3), subjects: m.subjects.length };
+  // album: the best GOLD.keep shots across all flights (daily flights too)
+  ALBUM.shots.push(shot); ALBUM.shots.sort((a, b) => b.s - a.s); ALBUM.shots.length = Math.min(ALBUM.shots.length, GOLD.keep);
+  const kept = ALBUM.shots.includes(shot);
+  if (kept) store('album', ALBUM);
+  if (!G.simming) VF.thumbReq = { shot, kept };
+  sfx.shutter();
+  if (!G.simming) { $('flash').classList.add('on'); setTimeout(() => $('flash').classList.remove('on'), 60); }
+  const P = r.parts, res = $('vf-res');
+  res.innerHTML = `<b>${t('shotScore', { s: r.score })}</b><span>${t('pLight')} ${P.light}/25</span><span>${t('pThirds')} ${P.thirds}/35</span>` +
+    `<span>${t('pHorizon')} ${P.horizon}/20</span><span>${t('pVariety')} ${P.variety}/20</span><span>${t('subjLbl')}: ${t('k_' + (shot.k || 'none'))}</span>` + (kept ? `<span style="color:var(--gold-ink)">${t('shotSaved')}</span>` : '');
+  res.hidden = false; clearTimeout(VF.resT); VF.resT = setTimeout(() => { res.hidden = true; }, 3200);
+  toast(`${t('shotScore', { s: r.score })}${kept ? ' · ' + t('shotSaved') : ''}`, kept ? 'good' : 'info');
+  updateVF();
+  if (VF.film <= 0 && !G.simming) setTimeout(() => { if (VF.film <= 0) closeVF(); }, 1600);
+  return r;
+}
+// thumbnail: a 3:2 centre crop of the frame just rendered, saved as a small JPEG data URL
+function takeVFThumb() {
+  const q = VF.thumbReq; VF.thumbReq = null; if (!q) return;
+  const src = renderer.domElement, sw = src.width, sh = src.height;
+  let w = sw, h = sw / 1.5; if (h > sh) { h = sh; w = sh * 1.5; }
+  const cv = document.createElement('canvas'); cv.width = 168; cv.height = 112;
+  cv.getContext('2d').drawImage(src, (sw - w) / 2, (sh - h) / 2, w, h, 0, 0, 168, 112);
+  try { q.shot.img = cv.toDataURL('image/jpeg', 0.72); } catch (e) { q.shot.img = ''; }
+  if (q.kept) store('album', ALBUM);
+}
+// basket sway: the frame rolls a little; the burner shakes it more
+function stepVF(dt) {
+  const sway = 1.6 + 5 * (PLAYER.heat || 0);
+  VF.roll = sway * (0.7 * Math.sin(G.time * 1.3) + 0.3 * Math.sin(G.time * 2.3 + 1));
+  if (!VF.on) return;
+  if (G.F && G.F.over) { closeVF(); return; }
+  if (VF.slowLeft > 0) { VF.slowLeft = Math.max(0, VF.slowLeft - dt); if (VF.slowLeft === 0 && !VF.slowMsg) { VF.slowMsg = true; toast(t('vfSlowOut'), 'info'); } }
+  updateVF();
+}
+function updateVF() {
+  if (!VF.on) return;
+  const el = Math.round(Math.asin(clamp(SUN_DIR.y, -1, 1)) / D2R), gold = el <= 15;
+  $('vf-top').innerHTML = `<span>${t('vfFilm', { n: VF.film, m: GOLD.film })}</span><span class="${gold ? 'gold' : ''}">${t('vfSun', { e: el })} · ${t(gold ? 'vfGold' : 'vfHarsh')}</span>` +
+    `<span>${t('vfLevel', { r: VF.roll.toFixed(1) })}</span>` + (VF.slowLeft > 0 ? `<span>${t('vfSlow', { s: Math.ceil(VF.slowLeft) })}</span>` : '');
+  const lv = $('vf-lvl'); lv.style.transform = `rotate(${(-VF.roll).toFixed(2)}deg)`; lv.classList.toggle('ok', Math.abs(VF.roll) < 1);
+  $('vf-shoot').disabled = VF.film <= 0;
+}
+function resetVF() { if (VF.on) closeVF(); Object.assign(VF, { film: GOLD.film, slowLeft: GOLD.slow, shots: [], slowMsg: false, last: null }); }
+const safeImg = s => typeof s === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(s) ? s : '';
+function shotCaption(sh) {
+  const P = sh.p || {}, n = v => Math.round(Number(v) || 0);
+  return `<b>${n(sh.s)}</b>${placeName(sh)} · ${t('k_' + (['chimney', 'balloon', 'landmark'].includes(sh.k) ? sh.k : 'none'))}<br>` +
+    `${t('pLight')} ${n(P.light)} · ${t('pThirds')} ${n(P.thirds)} · ${t('pHorizon')} ${n(P.horizon)} · ${t('pVariety')} ${n(P.variety)}<br>${t('flightLbl', { n: n(sh.f) + 1 })} · ${String(sh.d || '').replace(/[^0-9-]/g, '')}`;
+}
+function buildGallery() {
+  $('gal-count').textContent = t('galCount', { n: ALBUM.shots.length, m: GOLD.keep });
+  $('shots').innerHTML = ALBUM.shots.length ? ALBUM.shots.map(sh => {
+    const im = safeImg(sh.img);
+    return `<figure class="shot">${im ? `<img src="${im}" alt="${t('golden')} ${Math.round(Number(sh.s) || 0)}">` : '<div class="noimg"></div>'}<figcaption>${shotCaption(sh)}</figcaption></figure>`;
+  }).join('') : `<p class="sub" style="grid-column:1/-1;color:var(--ink2)">${t('galEmpty')}</p>`;
+}
+function openGallery() { showOnly('ov-gallery'); buildGallery(); $('b-gclose').focus(); }
+function closeGallery() { showOnly('ov-title'); $('b-gallery').focus(); }
+// ?auto: the bot takes one golden-hour photo per run, aimed at the nearest chimney cluster
+const BOTSHOT = { done: false, t: 0 };
+function botPhoto(dt) {
+  const F = G.F;
+  if (BOTSHOT.done || !F || F.over || F.S.onGround || F.t < 30 || F.S.agl < 25) return;
+  if (!VF.on) {
+    const S = F.S; let best = null, bd = 1e9;
+    for (const c of C.CLUSTERS) { const d = Math.hypot(c.x - S.x, c.z - S.z); if (d > 120 && d < bd) { bd = d; best = c; } }
+    openVF(); if (!VF.on) { BOTSHOT.done = true; return; }
+    if (best) { G.cam.yaw = (C.bearing(best.x - S.x, best.z - S.z) - 8 + 360) % 360; G.cam.pitch = clamp(Math.atan2(S.agl, bd) - 0.05, -0.2, 0.9); }
+    BOTSHOT.t = 0; return;
+  }
+  BOTSHOT.t += dt;
+  if (BOTSHOT.t > 0.5 && VF.shots.length === 0) shootVF();
+  if (BOTSHOT.t > 1.2) { closeVF(); BOTSHOT.done = true; }
+}
+
+// ---------------------------------------------------------------------------
 // Input
 // ---------------------------------------------------------------------------
 const PTR = new Map();
@@ -3864,7 +4114,7 @@ function ptrEnd(e) { PTR.delete(e.pointerId); if (PTR.size < 2) pinch0 = 0; if (
 canvas.addEventListener('pointerup', ptrEnd); canvas.addEventListener('pointercancel', ptrEnd);
 canvas.addEventListener('contextmenu', e => e.preventDefault());
 canvas.addEventListener('wheel', e => { e.preventDefault(); zoom(e.deltaY > 0 ? 1.12 : 1 / 1.12); }, { passive: false });
-function zoom(f) { if (G.cam.mode === 'map') G.cam.mapH = clamp(G.cam.mapH * f, 250, 1600); else G.cam.dist = clamp(G.cam.dist * f, 22, 420); }
+function zoom(f) { if (VF.on) { VF.fov = clamp(VF.fov * f, 28, 68); return; } if (G.cam.mode === 'map') G.cam.mapH = clamp(G.cam.mapH * f, 250, 1600); else G.cam.dist = clamp(G.cam.dist * f, 22, 420); }
 function holdButton(id, key) {
   const el = $(id);
   const on = e => { e.preventDefault(); audioInit(); G.btn[key] = true; try { el.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointer */ } };
@@ -3874,11 +4124,13 @@ function holdButton(id, key) {
   el.addEventListener('keyup', e => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); G.btn[key] = false; } });
 }
 holdButton('c-burn', 'burn'); holdButton('c-vent', 'vent');
-function overlayOpen() { return ['ov-title', 'ov-map', 'ov-pause', 'ov-settings', 'ov-notes'].some(id => !$(id).hidden); }
+function overlayOpen() { return ['ov-title', 'ov-map', 'ov-pause', 'ov-settings', 'ov-notes', 'ov-gallery'].some(id => !$(id).hidden); }
 addEventListener('keydown', e => {
   const k = e.key, tag = e.target && e.target.tagName;
   if (k !== ' ' || tag !== 'BUTTON') audioInit();
   if (k === 'Escape' || k === 'p' || k === 'P') {
+    if (VF.on) { closeVF(); e.preventDefault(); return; }
+    if (!$('ov-gallery').hidden) { closeGallery(); e.preventDefault(); return; }
     if (!$('ov-settings').hidden) { closeSettings(); e.preventDefault(); return; }
     if (!$('ov-notes').hidden) { closeNotes(); e.preventDefault(); return; }
     if (G.screen === 'play' || G.screen === 'result') { togglePause(); e.preventDefault(); }
@@ -3893,6 +4145,8 @@ addEventListener('keydown', e => {
   if (k === 'v' || k === 'V') { G.keys.vent = true; return; }
   if (e.repeat) return;
   if (k === 'f' || k === 'F') { doPhoto(); return; }
+  if (k === 'k' || k === 'K') { if (VF.on) shootVF(); else openVF(); e.preventDefault(); return; }
+  if (k === 'Enter' && VF.on) { e.preventDefault(); shootVF(); return; }
   if (k === 'd' || k === 'D') { doDrop(); return; }
   if (k === 'b' || k === 'B') { launchPibal(); return; }
   if (k === 'c' || k === 'C') { cycleCam(); return; }
@@ -4058,7 +4312,7 @@ function updateAudio(dt) {
 // ---------------------------------------------------------------------------
 // UI screens
 // ---------------------------------------------------------------------------
-function showOnly(id) { for (const o of ['ov-title', 'ov-map', 'ov-pause', 'ov-settings', 'ov-notes']) $(o).hidden = o !== id; }
+function showOnly(id) { for (const o of ['ov-title', 'ov-map', 'ov-pause', 'ov-settings', 'ov-notes', 'ov-gallery']) $(o).hidden = o !== id; }
 function toast(msg, kind = 'info') {
   if (G.simming) return;
   const el = document.createElement('div'); el.className = 'toast glass ' + kind; el.textContent = msg;
@@ -4075,9 +4329,11 @@ function applyTexts() {
   $('seg-tips').querySelectorAll('button').forEach(b => b.classList.toggle('on', (b.dataset.v === 'on') === (SET.tips !== false)));
   buildCoach();
   if (!$('ov-notes').hidden) buildNotes();
+  if (!$('ov-gallery').hidden) buildGallery();
+  updateVF();
   $('b-speed').textContent = G.speed + '×';
   $('c-viewn').textContent = t('cam_' + G.cam.mode);
-  for (const [id, k] of [['c-burn', 'burner'], ['c-vent', 'vent'], ['c-photo', 'photo'], ['c-drop', 'drop'], ['c-view', 'camBtn']]) $(id).setAttribute('aria-label', t(k));
+  for (const [id, k] of [['c-burn', 'burner'], ['c-vent', 'vent'], ['c-photo', 'photo'], ['c-drop', 'drop'], ['c-view', 'camBtn'], ['c-golden', 'goldenBtn']]) $(id).setAttribute('aria-label', t(k));
   refreshTitle();
   if (G.F && (G.screen === 'play' || G.screen === 'result')) { buildGoalPanel(G.F); buildLadder(G.F); updateHUD(0, true); }
   if (!$('ov-map').hidden) { buildRegions(); drawMap(); buildBrief(); }
@@ -4259,6 +4515,7 @@ function openMap() {
 }
 function togglePause() {
   if (G.screen !== 'play' && G.screen !== 'result') return;
+  closeVF();
   G.paused = !G.paused;
   G.keys.burn = G.keys.vent = false; G.btn.burn = G.btn.vent = false;
   if (G.paused) { showOnly('ov-pause'); $('b-resume').focus(); } else showOnly(null);
@@ -4279,11 +4536,13 @@ function setQuality(q) {
   applyTexts();
 }
 function toTitle() {
+  closeVF();
   if (G.screen !== 'title' && G.screen !== 'map') setupLaunch(C.REGIONS[0].launch.x, C.REGIONS[0].launch.z);
   placePeople(false); G.paused = false; G.screen = 'title'; G.F = null; G.daily = null; clearMarkers(); hideHud(); $('ov-result').hidden = true; $('ov-end').hidden = true; G.ending = false;
   PLAYER.pax.visible = false; showOnly('ov-title'); refreshTitle(); $('b-play').focus();
 }
 function openEnd() {
+  closeVF();
   G.screen = 'end'; G.F = null; G.daily = null; clearMarkers(); hideHud(); showOnly(null); $('ov-result').hidden = true;
   $('ov-end').hidden = false; G.ending = true; G.endT = 0; fillEnd(); placePeople(true);
   sfx.applause(3); music.stinger();
@@ -4323,6 +4582,11 @@ $('b-rmap').addEventListener('click', () => { sfx.click(); openMap(); });
 $('b-cam').addEventListener('click', () => { audioInit(); cycleCam(); });
 $('c-view').addEventListener('click', () => { audioInit(); cycleCam(); });
 $('c-photo').addEventListener('click', () => { audioInit(); doPhoto(); });
+$('c-golden').addEventListener('click', () => { audioInit(); openVF(); });
+$('vf-shoot').addEventListener('click', e => { e.stopPropagation(); audioInit(); shootVF(); canvas.focus(); });
+$('vf-close').addEventListener('click', () => closeVF());
+$('b-gallery').addEventListener('click', () => { audioInit(); sfx.click(); openGallery(); });
+$('b-gclose').addEventListener('click', closeGallery);
 $('c-drop').addEventListener('click', () => { audioInit(); doDrop(); });
 $('b-speed').addEventListener('click', () => { audioInit(); cycleSpeed(); });
 $('b-pause').addEventListener('click', () => { audioInit(); togglePause(); });
@@ -4370,18 +4634,20 @@ function update(dt) {
   if (FLAG.auto) autoUpdate(dt);
   const F = G.F;
   if (G.screen === 'play' && F && !G.paused) {
-    G.acc += dt * (G.simming ? 1 : G.speed);
+    G.acc += dt * (G.simming ? 1 : G.speed * vfSlowRate());
     let n = 0;
     while (G.acc >= FIXED && n < 24) { stepFixed(FIXED); G.acc -= FIXED; n++; }
     if (n >= 24) G.acc = 0;
     if (F.over && G.resultT > 0) { G.resultT -= dt; if (G.resultT <= 0) showResult(); }
+    if (FLAG.auto) botPhoto(dt);
   }
+  if (G.screen === 'play' && !G.paused) stepVF(dt);
 }
 function render(dt) {
   const F = G.F, play = (G.screen === 'play' || G.screen === 'result') && F;
   const wf = play ? F : TITLE_F;
   if (!play) TITLE_F.t += dt;
-  const gdt = play ? (G.paused ? 0 : dt * G.speed) : dt;
+  const gdt = play ? (G.paused ? 0 : dt * G.speed * vfSlowRate()) : dt;
   // sky and light
   let kind = 'dawn', k = 0;
   if (G.screen === 'end') { kind = 'dawn'; k = 0.85; }
@@ -4451,6 +4717,7 @@ function render(dt) {
   PART.mat.uniforms.scale.value = renderer.domElement.height / (2 * Math.tan(camera.fov * D2R / 2));
   renderer.render(scene, camera);
   if (G.snapReq) takeSnapshot();
+  if (VF.thumbReq) takeVFThumb();
   DBG.calls = renderer.info.render.calls; DBG.tris = renderer.info.render.triangles;
 }
 
@@ -4478,6 +4745,8 @@ function exportState() {
     launch: { t: +LAUNCH.t.toFixed(1), waiting: CROWD.list.slice(0, LAUNCH.n).filter(b => b.launch && LAUNCH.t < b.delay + 11).length, rising: CROWD.list.slice(0, LAUNCH.n).filter(b => b.launch && LAUNCH.t >= b.delay + 11).length, airborne: CROWD.list.slice(0, LAUNCH.n).filter(b => !b.launch).length },
     gust: F ? { level: F.gust, wedges: F.gust > 0, warnings: G.gustWarn, socks: SOCK.spots.map(s => ({ yaw: +(s.yaw * 180 / Math.PI).toFixed(1), sp: +(s.sp || 0).toFixed(2) })) } : null,
     mascot: Object.keys(MASCOT),
+    golden: { vf: VF.on, film: VF.film, filmMax: GOLD.film, slowLeft: +VF.slowLeft.toFixed(1), fov: VF.fov, shots: VF.shots.map(sh => ({ s: sh.s, p: sh.p, k: sh.k, lm: sh.lm, img: !!sh.img })),
+      last: VF.last || null, album: ALBUM.shots.map(sh => ({ s: sh.s, k: sh.k, f: sh.f, img: sh.img ? sh.img.length : 0 })) },
   });
 }
 window.kapadokyaSim = (seconds) => {
@@ -4485,7 +4754,8 @@ window.kapadokyaSim = (seconds) => {
   for (let i = 0; i < n; i++) { update(1 / 30); if (FLAG.auto && AUTO.done) break; }
   G.simming = false; exportState(); return window.kapadokya;
 };
-window.kapadokyaDebug = { G, togglePause, openSettings, C, startFlight, openEnd, openMap, showResult, cycleCam, setQuality, PROG, openNotes, launchPibal, startDaily, dailyInfo, COACH, REVEAL, LAUNCH };
+window.kapadokyaDebug = { G, togglePause, openSettings, C, startFlight, openEnd, openMap, showResult, cycleCam, setQuality, PROG, openNotes, launchPibal, startDaily, dailyInfo, COACH, REVEAL, LAUNCH,
+  VF, ALBUM, GOLD, openVF, closeVF, shootVF, scoreFrame, measureFrame, openGallery };
 function debugText() {
   const e = window.__errs, F = G.F;
   $('dbg').innerHTML = `fps ${DBG.fps}  calls ${DBG.calls}  tris ${DBG.tris}\n${DBG.gpu}\nscreen ${G.screen}  flight ${F ? G.idx + 1 : '-'}  t ${F ? F.t.toFixed(0) : 0}  alt ${F ? F.S.y.toFixed(0) : 0}  x${G.speed}\nbot ${FLAG.auto ? BOTLOG.length + '/12' : 'off'} ${AUTO.done ? 'DONE' : ''}  stars ${totalStars()}` +
@@ -4514,7 +4784,7 @@ function frame(now) {
   if (G.hidden) return;
   mouseHold();
   update(dt);
-  if (G.F && G.screen === 'play') updateGust(G.F, dt * G.speed);
+  if (G.F && G.screen === 'play') updateGust(G.F, dt * G.speed * vfSlowRate());
   render(dt);
   updateHUD(dt);
   updateAudio(dt);
