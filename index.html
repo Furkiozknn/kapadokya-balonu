@@ -1006,6 +1006,11 @@ b, .num { font-variant-numeric: tabular-nums; }
 .vf-shoot:active { transform: scale(0.94); }
 .vf-shoot:disabled { opacity: .35; }
 #ui.vf-on .ladder, #ui.vf-on .gpanel, #ui.vf-on .inst, #ui.vf-on .ctl, #ui.vf-on .hint, #ui.vf-on .coach, #ui.vf-on .topbar { visibility: hidden; }
+/* touch has no Space/V keys: keep the burner and the vent usable while framing a shot (left side, away from the shutter) */
+@media (pointer: coarse) {
+  #ui.vf-on .ctl { visibility: visible; right: auto; left: calc(10px + var(--sa-l, 0px)); bottom: calc(60px + var(--sa-b)); z-index: 21; }
+  #ui.vf-on .ctl .row:first-child { display: none; }
+}
 .shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .shot { margin: 0; border: 1px solid var(--line); border-radius: 12px; padding: 8px; background: var(--wash); }
 .shot img, .shot .noimg { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 6px; background: #18121E; }
@@ -1578,16 +1583,17 @@ input[type=range] {
   /* Instruments on mobile */
   .inst {
     min-width: 0;
-    max-width: calc(100vw - 165px);
-    grid-template-columns: 1fr 1fr;
+    max-width: calc(100vw - 182px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));   /* cells shrink with the panel instead of spilling under the controls */
     gap: 4px 6px;
     padding: 6px 8px;
   }
-  .inst > div { padding: 4px 6px; }
+  .inst > div { padding: 4px 6px; min-width: 0; }
+  .inst .lbl { width: auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .inst .big { font-size: 18px; }
   .inst .sub { font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .inst .lbl { font-size: 9px; }
-  .gauge, .vario { width: 68px; height: 6px; }
+  .gauge, .vario { width: 100%; max-width: 68px; height: 6px; }
 
   /* Controls on mobile (ergonomic, non-cramped thumb arc) */
   .ctl {
@@ -1598,9 +1604,11 @@ input[type=range] {
   .ctl .row { gap: 6px; }
   .ctl .row:first-child {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 50px);   /* 5 small buttons (Golden Hour included) in 3+2, so the panel stays clear of the instruments */
     gap: 6px;
   }
+  .ctl .row:first-child .cbtn { min-width: 0; padding: 0 2px; }
+  .ctl .row:first-child .cbtn span { white-space: normal; line-height: 1.05; text-align: center; }
   .burn { width: 78px; height: 78px; font-size: 11.5px; }
   .burn svg { width: 28px; height: 28px; }
   .vent { width: 56px; height: 56px; font-size: 10.5px; }
@@ -2130,9 +2138,9 @@ a.btn { text-decoration: none; }
       <button class="cbtn" id="c-drop"><kbd>D</kbd><svg><use href="#i-drop"/></svg><span id="c-dropn"></span></button>
       <button class="cbtn" id="c-pibal"><kbd>B</kbd><svg><use href="#i-pibal"/></svg><span id="c-pibaln"></span></button>
       <button class="cbtn" id="c-view"><kbd>C</kbd><svg><use href="#i-view"/></svg><span id="c-viewn"></span></button>
+      <button class="cbtn" id="c-golden"><kbd>K</kbd><svg><use href="#i-frame"/></svg><span id="c-goldenn"></span></button>
     </div>
     <div class="row">
-      <button class="cbtn" id="c-golden"><kbd>K</kbd><svg><use href="#i-frame"/></svg><span id="c-goldenn"></span></button>
       <button class="cbtn vent" id="c-vent"><kbd>V</kbd><svg><use href="#i-vent"/></svg><span data-t="vent"></span></button>
       <button class="cbtn burn" id="c-burn"><kbd>Space</kbd><svg><use href="#i-flame"/></svg><span data-t="burner"></span></button>
     </div>
@@ -2964,6 +2972,7 @@ const I18N = {
   tr: {
     subtitle: 'Peribacaları üstünde gün doğumu, rüzgâr bulmacası', play: 'Oyna', continue: 'Devam Et', settings: 'Ayarlar', regionMap: 'Bölge Haritası',
     howto: 'Dümen yok: brülörle ısıt ve yüksel, supapla soğut ve alçal. Her yükseklikte rüzgâr başka yöne eser; gitmek istediğin yöne esen katmanı seç. Üst katmanları görmek için B ile pilot balonu bırak. Zarf gecikmeli tepki verir, propan sınırlı.',
+    howtoTouch: 'Dümen yok: brülörle ısıt ve yüksel, supapla soğut ve alçal. Her yükseklikte rüzgâr başka yöne eser; gitmek istediğin yöne esen katmanı seç. Üst katmanları görmek için Pibal düğmesiyle pilot balonu bırak. Zarf gecikmeli tepki verir, propan sınırlı.',
     takeoff: 'Kalkış', mainMenu: 'Ana Menü', paused: 'Duraklatıldı', resume: 'Devam', restartFlight: 'Uçuşu Baştan Al', master: 'Ana ses', music: 'Müzik',
     effects: 'Efektler', language: 'Dil', quality: 'Kalite', low: 'Düşük', high: 'Yüksek', fullscreen: 'Tam ekran', back: 'Geri', retry: 'Tekrar',
     nextFlight: 'Sonraki Uçuş', finale: 'Final', goals: 'Hedefler', fuel: 'Yakıt', windLayers: 'Rüzgâr', alt: 'İrtifa', vario: 'Varyo', envTemp: 'Zarf',
@@ -3008,12 +3017,14 @@ const I18N = {
     noFilm: 'Film bitti: her uçuşta {m} kare', pLight: 'Işık', pThirds: 'Üçte bir', pHorizon: 'Ufuk', pVariety: 'Çeşit/mesafe',
     shotScore: 'Kare puanı {s}/100', shotSaved: 'Albüme girdi!', k_chimney: 'peribacası', k_balloon: 'balon', k_landmark: 'yapı', k_none: 'konu yok', subjLbl: 'Konu',
     gallery: 'Albüm', galTitle: 'Altın Saat Albümü', galCount: '{n}/{m} kare',
+    galEmptyTouch: 'Henüz kare yok. Uçuşta Altın Saat düğmesiyle vizörü aç; güneş alçakken bir peribacasını ya da balonu üçte bir noktasına koy, ufku düz tut.',
     galEmpty: 'Henüz kare yok. Uçuşta K ile vizörü aç; güneş alçakken bir peribacasını ya da balonu üçte bir noktasına koy, ufku düz tut.',
     resShot: 'Altın saat: en iyi kare {s}/100 · {n} kare çekildi', flightLbl: 'Uçuş {n}',
   },
   en: {
     subtitle: 'Sunrise over the fairy chimneys, a wind puzzle', play: 'Play', continue: 'Continue', settings: 'Settings', regionMap: 'Region Map',
     howto: 'There is no steering: heat with the burner to climb, open the vent to descend. The wind blows a different way at every height, so pick the layer that goes where you want. Press B to send up a pilot balloon that reveals the upper layers. The envelope reacts with a lag and propane is limited.',
+    howtoTouch: 'There is no steering: heat with the burner to climb, open the vent to descend. The wind blows a different way at every height, so pick the layer that goes where you want. Tap Pibal to send up a pilot balloon that reveals the upper layers. The envelope reacts with a lag and propane is limited.',
     takeoff: 'Take off', mainMenu: 'Main Menu', paused: 'Paused', resume: 'Resume', restartFlight: 'Restart Flight', master: 'Master', music: 'Music',
     effects: 'Effects', language: 'Language', quality: 'Quality', low: 'Low', high: 'High', fullscreen: 'Fullscreen', back: 'Back', retry: 'Retry',
     nextFlight: 'Next Flight', finale: 'Finale', goals: 'Goals', fuel: 'Fuel', windLayers: 'Wind', alt: 'Altitude', vario: 'Vario', envTemp: 'Envelope',
@@ -3058,12 +3069,17 @@ const I18N = {
     noFilm: 'Out of film: {m} frames per flight', pLight: 'Light', pThirds: 'Thirds', pHorizon: 'Horizon', pVariety: 'Variety/range',
     shotScore: 'Shot score {s}/100', shotSaved: 'Added to the album!', k_chimney: 'fairy chimney', k_balloon: 'balloon', k_landmark: 'landmark', k_none: 'no subject', subjLbl: 'Subject',
     gallery: 'Album', galTitle: 'Golden Hour Album', galCount: '{n}/{m} shots',
+    galEmptyTouch: 'No shots yet. In flight tap Golden Hour for the viewfinder; while the sun is low, put a fairy chimney or a balloon on a thirds point and keep the horizon level.',
     galEmpty: 'No shots yet. In flight press K for the viewfinder; while the sun is low, put a fairy chimney or a balloon on a thirds point and keep the horizon level.',
     resShot: 'Golden hour: best shot {s}/100 · {n} frames taken', flightLbl: 'Flight {n}',
   },
 };
+// touch screens: no keyboard, so use the "<key>Touch" wording when there is one and drop key names like "(Space)" / "(V)"
+const COARSE = matchMedia('(pointer:coarse)');
 function t(k, vars) {
-  let s = (I18N[SET.lang] && I18N[SET.lang][k]) ?? I18N.en[k] ?? k;
+  const L = I18N[SET.lang] || I18N.en, touch = COARSE.matches;
+  let s = (touch && (L[k + 'Touch'] ?? I18N.en[k + 'Touch'])) || (L[k] ?? I18N.en[k] ?? k);
+  if (touch && typeof s === 'string') s = s.replace(/ \((?:[A-Z]|Space|Boşluk)\)/g, '');
   if (vars) for (const v in vars) s = s.split('{' + v + '}').join(vars[v]);
   return s;
 }
