@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Kapadokya Balonu</title>
+<meta name="arena-game" content="kapadokya-balonu">
 <meta name="description" content="A 3D hot-air balloon wind puzzle over Cappadocia: no rudder, only burn and vent. Pick the wind layer that blows your way. Plays in the browser.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Kapadokya Balonu">
@@ -1654,6 +1655,10 @@ input[type=range] {
   .mascot img, .toast, .polaroid, .pfact, .lrow.gust, .cbtn.ready, .fbar.low i { animation: none !important; }
   .toast.out { transition: none !important; transform: none; }
 }
+/* the same when "Reduce motion" is on in the Arena accessibility panel */
+html[data-arena-reduced-motion] :is(.mascot img, .toast, .polaroid, .pfact, .lrow.gust, .cbtn.ready, .fbar.low i) { animation: none !important; }
+html[data-arena-reduced-motion] .toast.out { transition: none !important; transform: none; }
+a.btn { text-decoration: none; }
 </style>
 <script>/*ARENA-KIT:BEGIN v1.0.0 sha256:a9b9a8b52b3e*/
 /* ARENA-KIT v1 — shared layer for the 21 Claude Game Arena games.
@@ -2212,6 +2217,7 @@ input[type=range] {
       <div class="row"><span class="lbl" data-t="quality"></span><div class="seg" id="seg-q"><button data-q="low" data-t="low"></button><button data-q="high" data-t="high"></button></div></div>
       <div class="row"><span class="lbl" data-t="tips"></span><div class="seg" id="seg-tips"><button data-v="on" data-t="on"></button><button data-v="off" data-t="off"></button></div></div>
       <button class="btn w" id="b-full"><svg><use href="#i-full"/></svg><span data-t="fullscreen"></span></button>
+      <button class="btn w" id="b-a11y"><span data-t="a11y"></span></button>
       <button class="btn primary w" id="b-sclose"><svg><use href="#i-back"/></svg><span data-t="back"></span></button>
     </div>
   </div>
@@ -2246,6 +2252,7 @@ input[type=range] {
       <div class="rfact" id="r-fact" hidden></div>
       <div class="rshot" id="r-shot" hidden></div>
       <div class="row" style="justify-content:flex-end">
+        <button class="btn" id="b-rshare"><span data-t="share"></span></button>
         <button class="btn" id="b-rmap"><svg><use href="#i-map"/></svg><span data-t="regionMap"></span></button>
         <button class="btn" id="b-retry"><svg><use href="#i-restart"/></svg><span data-t="retry"></span></button>
         <button class="btn primary" id="b-next"><svg><use href="#i-play"/></svg><span id="b-next-t"></span></button>
@@ -2266,6 +2273,8 @@ input[type=range] {
         <div><b id="e-flights">0/12</b><span data-t="flightsLbl"></span></div>
       </div>
       <div class="row" style="justify-content:flex-end">
+        <a class="btn" id="a-eother" href="https://furkiozknn.github.io/" target="_blank" rel="noopener"><span data-t="another"></span></a>
+        <button class="btn" id="b-eshare"><span data-t="share"></span></button>
         <button class="btn" id="b-emenu"><svg><use href="#i-home"/></svg><span data-t="mainMenu"></span></button>
         <button class="btn primary" id="b-again"><svg><use href="#i-map"/></svg><span data-t="regionMap"></span></button>
       </div>
@@ -2866,6 +2875,9 @@ const FLAG = {
   speed: parseFloat(Q.get('speed') || '0') || 0, cam: Q.get('cam'),
   daily: Q.has('daily') ? (/^\d{4}-\d{2}-\d{2}$/.test(Q.get('daily') || '') ? Q.get('daily') : 'today') : null,
 };
+// Arena shared layer (inline classic script above the import map); every use below is optional
+const ARENA = window.Arena && window.Arena.version ? window.Arena : null;
+const ARENA_ID = 'kapadokya-balonu', GAME_URL = 'https://furkiozknn.github.io/kapadokya-balonu/';
 // The world, textures and sounds are generated in code. The only files are the two mascot PNGs on the landing
 // report; they load after the first frame and ?noassets skips them.
 const ASSETS = { used: !FLAG.noassets, loaded: [], failed: [], skipped: FLAG.noassets, note: 'procedural world; mascot PNGs only' };
@@ -2976,6 +2988,10 @@ const I18N = {
     layerSeen: 'Katman okundu: {h} m üstü', gustWarn: 'Sert hamle geliyor!',
     dailyTitle: 'Günlük Uçuş · {d}', dailyBest: 'Bugünün en iyisi: {s} puan · {st} yıldız', dailyNone: 'Bugün: {f} · rüzgârlar karıştı',
     dailySub: 'Günlük Uçuş {d} · {f} · en iyi {s}', dailyRec: 'Günün rekoru!',
+    // Arena (ortak katman)
+    dailyStreak: 'seri {s} gün · en iyi {b}', share: 'Paylaş', another: 'Başka oyun', a11y: 'Erişilebilirlik',
+    shareFlight: '{f} · {sc} puan · {st}/3 yıldız', shareDaily: 'Günlük Uçuş {d} · seri {s}', shareEnd: '{s}/36 yıldız · {n}/12 uçuş',
+    badgeFirst: 'İlk iniş', badge3: 'Üç yıldızlı uçuş', badgeAll: 'Vadinin pilotu',
     golden: 'Altın Saat', goldenBtn: 'Altın Saat fotoğrafı (K)', vfShoot: 'Deklanşör (K / Enter)', vfClose: 'Vizörü kapat (Esc)',
     vfFilm: 'Film {n}/{m}', vfSlow: 'Ağır çekim {s} sn', vfSlowOut: 'Ağır çekim hakkı bitti', vfSun: 'Güneş {e}°', vfGold: 'altın ışık', vfHarsh: 'sert ışık',
     vfLevel: 'Ufuk {r}°', vfHelp: 'K / Enter: çek · ok tuşları ya da sürükle: kadraj · + / −: yakınlaş · Esc: kapat · brülör ve supap çalışır',
@@ -3022,6 +3038,10 @@ const I18N = {
     layerSeen: 'Layer read: above {h} m', gustWarn: 'Strong gust coming!',
     dailyTitle: 'Daily Flight · {d}', dailyBest: 'Best today: {s} points · {st} stars', dailyNone: 'Today: {f} · winds reshuffled',
     dailySub: 'Daily Flight {d} · {f} · best {s}', dailyRec: 'Best of the day!',
+    // Arena (shared layer)
+    dailyStreak: 'streak {s} days · best {b}', share: 'Share', another: 'Another game', a11y: 'Accessibility',
+    shareFlight: '{f} · {sc} points · {st}/3 stars', shareDaily: 'Daily Flight {d} · streak {s}', shareEnd: '{s}/36 stars · {n}/12 flights',
+    badgeFirst: 'First landing', badge3: 'Three-star flight', badgeAll: 'Pilot of the valley',
     golden: 'Golden Hour', goldenBtn: 'Golden Hour photo (K)', vfShoot: 'Shutter (K / Enter)', vfClose: 'Close the viewfinder (Esc)',
     vfFilm: 'Film {n}/{m}', vfSlow: 'Slow motion {s} s', vfSlowOut: 'Slow motion used up', vfSun: 'Sun {e}°', vfGold: 'golden light', vfHarsh: 'harsh light',
     vfLevel: 'Horizon {r}°', vfHelp: 'K / Enter: shoot · arrows or drag: frame · + / −: zoom · Esc: close · burner and vent still work',
@@ -3046,6 +3066,13 @@ const GOAL_ICON = { low: 'i-low', drop: 'i-drop', photo: 'i-cam', pickup: 'i-pax
 const canvas = $('c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, SET.quality === 'low' ? 1 : 1.5));
+// Arena: dynamic pixel ratio for weak GPUs under the quality tier's cap (re-attached in setQuality, which resets the ratio)
+let arenaPerf = null;
+function arenaPerfAttach() {
+  if (!ARENA) return; if (arenaPerf) arenaPerf.stop();
+  arenaPerf = ARENA.perf.attach(renderer, { max: Math.min(devicePixelRatio || 1, SET.quality === 'low' ? 1 : 1.5) });
+}
+arenaPerfAttach();
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -3841,6 +3868,7 @@ const G = {
   keys: { burn: false, vent: false }, btn: { burn: false, vent: false }, mouseBurn: false, active: null, sel: 0, album: [], snapReq: null,
   resultT: -1, endT: 0, hintT: 0, lastToast: {}, introT: 0, ending: false, dispFuel: 1,
   daily: null, flightNotes: [], gustT: 0, gustCD: 0, gustWarn: 0, gustRow: -1,
+  reduced: false, share: null, // Arena "Reduce motion" (no camera shake, no shutter flash); what the open Share button shares
 };
 // Input coach for flights 1-2: each step ticks only on the matching player input
 const COACH = { on: false, step: 0, done: false, ticks: [], burnT: 0, ventT: -99, layer0: -1, relT: 0, hideT: 0 };
@@ -3852,7 +3880,12 @@ const DBG = { fps: 0, frames: 0, acc: 0, calls: 0, tris: 0, gpu: '' };
 // Flight lifecycle
 // ---------------------------------------------------------------------------
 // Daily Flight: a date-seeded variant of one existing flight (same goals; winds +-40 deg and +-2 m/s)
-function todayStr() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+function todayStr() {
+  // with the Arena layer the day is the Arena day (UTC, ?d=YYYYMMDD replays one), so the Daily Flight and the streak agree;
+  // the flight and its winds still come from this game's own date hash below, so ?daily=YYYY-MM-DD links fly as before
+  if (ARENA) { const k = ARENA.daily(ARENA_ID).day; return `${Math.floor(k / 10000)}-${String(Math.floor(k / 100) % 100).padStart(2, '0')}-${String(k % 100).padStart(2, '0')}`; }
+  const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
 function dailyInfo(date) {
   let h = 2166136261; for (const ch of 'kapadokya-daily-' + date) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; }
   const R = rng(h), idx = Math.floor(R() * NF);
@@ -3909,7 +3942,7 @@ function doPhoto() {
   let note = null;
   if (ok) { const g = open.find(g => g.done); note = unlockNote(g ? [NOTE_PHOTO[g.lm]] : []); if (note) G.flightNotes.push(note); }
   sfx.shutter();
-  if (!G.simming) { $('flash').classList.add('on'); setTimeout(() => $('flash').classList.remove('on'), 60); G.snapReq = { ok, note }; }
+  if (!G.simming) { if (!G.reduced) $('flash').classList.add('on'); setTimeout(() => $('flash').classList.remove('on'), 60); G.snapReq = { ok, note }; }
 }
 // ---- coach
 function resetCoach() {
@@ -3971,9 +4004,9 @@ function handleEvents(F) {
         if (e.ok) toast(t('dropOk', { d }), 'good'); else toast(t('dropMiss', { d, n: F.markers }), 'bad');
         sfx.thud(0.5); puff(e.m.x, e.m.y, e.m.z, 14, 0xe8c8a0, 3, 4); break;
       }
-      case 'hit': toast(t('hit'), 'bad'); sfx.thud(1); sfx.scream(); G.cam.shake = 0.6; puff(F.S.x, F.S.y + 1, F.S.z, 16, 0xe8c09a, 3, 3); break;
+      case 'hit': toast(t('hit'), 'bad'); sfx.thud(1); sfx.scream(); if (!G.reduced) G.cam.shake = 0.6; puff(F.S.x, F.S.y + 1, F.S.z, 16, 0xe8c09a, 3, 3); break;
       case 'tree': sfx.rustle(); for (let i = 0; i < 4; i++) emit(F.S.x + (Math.random() - 0.5) * 3, F.S.y, F.S.z + (Math.random() - 0.5) * 3, (Math.random() - 0.5) * 3, 1.5, (Math.random() - 0.5) * 3, 1.2, 1.2, 0x7f9b3e, 0.9, 0); if (!G.lastToast.tree || G.time - G.lastToast.tree > 6) { G.lastToast.tree = G.time; toast(t('tree'), 'bad'); } break;
-      case 'bump': sfx.thud(Math.min(1, e.vy / 3)); puff(F.S.x, F.S.y, F.S.z, 18, 0xdcb48c, 5, 5); if (e.vy > 1.4) { toast(t('bump'), 'bad'); G.cam.shake = 0.4; } break;
+      case 'bump': sfx.thud(Math.min(1, e.vy / 3)); puff(F.S.x, F.S.y, F.S.z, 18, 0xdcb48c, 5, 5); if (e.vy > 1.4) { toast(t('bump'), 'bad'); if (!G.reduced) G.cam.shake = 0.4; } break;
       case 'pax': toast(t('pax'), 'good'); sfx.cheer(); PLAYER.pax.visible = true; break;
       case 'fuelLow': toast(t('fuelLow'), 'bad'); sfx.beep(); break;
       case 'fuelOut': toast(t('fuelOut'), 'bad'); sfx.beep(); sfx.beep(0.25); break;
@@ -3997,10 +4030,14 @@ function onFlightEnd(F, res) {
     res.dailyRec = res.ok && res.score > DAILY.score;
     if (res.ok) { DAILY.score = Math.max(DAILY.score, res.score); DAILY.stars = Math.max(DAILY.stars, res.starN); }
     store('daily', DAILY);
+    // Arena streak: a landed Daily Flight of the Arena day (not a replayed ?daily=<other date>) counts
+    if (ARENA && res.ok && !FLAG.auto && !FLAG.nosave && D.date === todayStr()) res.streak = ARENA.daily(ARENA_ID).complete(res.score);
+    if (res.ok) arenaAward('kapadokya-first', 'badgeFirst');
     G.result = res; G.resultT = 1.6;
     return;
   }
   if (res.ok) { const n = unlockNote([NOTE_FLIGHT[i % 3]]); if (n) G.flightNotes.push(n); }
+  if (res.ok) { arenaAward('kapadokya-first', 'badgeFirst'); if (res.starN >= 3) arenaAward('kapadokya-3star', 'badge3'); }
   if (res.ok) {
     PROG.done[i] = true;
     if (res.starN > prevStars) PROG.stars[i] = res.starN;
@@ -4030,7 +4067,10 @@ function showResult() {
   $('r-list').innerHTML = r.ok ? crit.map((c, k) => `<div style="color:${r.stars[k] ? 'var(--ink)' : 'var(--ink2)'}"><svg style="color:${r.stars[k] ? 'var(--green)' : 'var(--red)'}"><use href="#${r.stars[k] ? 'i-ok' : 'i-x'}"/></svg>${c}</div>`).join('') +
     `<div><svg><use href="#i-pax"/></svg>${t('passengers')}: ${mood(r.fright)} · ${t('damage')} ${r.damage}%</div>` : '';
   $('r-rec').hidden = !r.newRecord && !r.dailyRec; $('r-rec').textContent = t(r.dailyRec ? 'dailyRec' : 'newRecord');
-  if (G.daily) $('r-sub').textContent = t('dailySub', { d: G.daily.date, f: L2(F.D.n), s: Math.max(0, DAILY.score) }) + (r.ok ? '' : ' · ' + t('failSub'));
+  if (G.daily) $('r-sub').textContent = t('dailySub', { d: G.daily.date, f: L2(F.D.n), s: Math.max(0, DAILY.score) }) + (r.streak ? ' · ' + t('dailyStreak', { s: r.streak.streak, b: r.streak.best }) : '') + (r.ok ? '' : ' · ' + t('failSub'));
+  const shareLines = [t('shareFlight', { f: L2(F.D.n), sc: r.ok ? r.score : 0, st: r.starN || 0 })];
+  if (G.daily) shareLines.unshift(t('shareDaily', { d: G.daily.date, s: r.streak ? r.streak.streak : ARENA ? ARENA.daily(ARENA_ID).streak : 0 }));
+  G.share = { title: 'Kapadokya Balonu', lines: shareLines, url: GAME_URL }; $('b-rshare').hidden = !ARENA;
   // Valley Notebook: the newest card from this flight, else a card the player already owns
   const nid = G.flightNotes[G.flightNotes.length - 1], own = PROG.notes.length ? PROG.notes[G.idx % PROG.notes.length] : null, f = factOf(nid || own);
   $('r-fact').hidden = !f;
@@ -4366,7 +4406,7 @@ function shootVF() {
   if (kept) store('album', ALBUM);
   if (!G.simming) VF.thumbReq = { shot, kept };
   sfx.shutter();
-  if (!G.simming) { $('flash').classList.add('on'); setTimeout(() => $('flash').classList.remove('on'), 60); }
+  if (!G.simming) { if (!G.reduced) $('flash').classList.add('on'); setTimeout(() => $('flash').classList.remove('on'), 60); }
   const P = r.parts, res = $('vf-res');
   res.innerHTML = `<b>${t('shotScore', { s: r.score })}</b><span>${t('pLight')} ${P.light}/25</span><span>${t('pThirds')} ${P.thirds}/35</span>` +
     `<span>${t('pHorizon')} ${P.horizon}/20</span><span>${t('pVariety')} ${P.variety}/20</span><span>${t('subjLbl')}: ${t('k_' + (shot.k || 'none'))}</span>` + (kept ? `<span style="color:var(--gold-ink)">${t('shotSaved')}</span>` : '');
@@ -4674,7 +4714,7 @@ function toast(msg, kind = 'info') {
   setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 350); }, 2300);
 }
 function applyTexts() {
-  document.documentElement.lang = SET.lang;
+  document.documentElement.lang = SET.lang; if (ARENA) ARENA.lang(SET.lang);
   document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
   document.querySelectorAll('[data-tt]').forEach(el => { el.title = t(el.dataset.tt); el.setAttribute('aria-label', t(el.dataset.tt)); });
   $('b-lang').textContent = SET.lang === 'tr' ? 'EN' : 'TR';
@@ -4702,7 +4742,8 @@ function refreshTitle() {
   $('b-continue').hidden = !n;
   if (n) { const D = C.FLIGHTS[nx]; $('cont-info').textContent = t('contInfo', { r: L2(C.REGIONS[D.r].n), n: (nx % 4) + 1 }); }
   const dd = dailyInfo(todayStr());
-  $('daily-line').textContent = DAILY.date === dd.date && DAILY.score >= 0 ? t('dailyBest', { s: DAILY.score, st: DAILY.stars }) : t('dailyNone', { f: L2(C.FLIGHTS[dd.idx].n) });
+  $('daily-line').textContent = (DAILY.date === dd.date && DAILY.score >= 0 ? t('dailyBest', { s: DAILY.score, st: DAILY.stars }) : t('dailyNone', { f: L2(C.FLIGHTS[dd.idx].n) })) +
+    (ARENA ? ' · ' + t('dailyStreak', (d => ({ s: d.streak, b: d.best }))(ARENA.daily(ARENA_ID))) : '');
 }
 // Valley Notebook screen (title and pause)
 function buildNotes() {
@@ -4882,7 +4923,7 @@ function openSettings() {
 function closeSettings() { showOnly(G.settingsFrom); if (G.settingsFrom === 'ov-pause') $('b-resume').focus(); else if (G.settingsFrom === 'ov-title') $('b-settings').focus(); }
 function setQuality(q) {
   SET.quality = q; saveSettings();
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, q === 'low' ? 1 : 1.5)); renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, q === 'low' ? 1 : 1.5)); renderer.setSize(innerWidth, innerHeight); arenaPerfAttach();
   sun.castShadow = q !== 'low';
   if (WORLD.cloudVec) WORLD.cloudVec.z = q === 'low' ? 0 : 0.25;
   ENV_UNI.uFx.value = q === 'low' ? 0 : 1;
@@ -4906,6 +4947,8 @@ function fillEnd() {
   $('end-cap').textContent = t('groupPhoto', { s: tot });
   $('e-stars').textContent = `${tot}/36`; $('e-flights').textContent = `${nd}/12`;
   const rec = $('end-rec'); rec.hidden = !(tot >= BEST.stars && tot > 0); rec.textContent = t('newRecord');
+  G.share = { title: 'Kapadokya Balonu', lines: [t('shareEnd', { s: tot, n: nd })], url: GAME_URL };
+  if (nd >= NF) arenaAward('kapadokya-all', 'badgeAll');
   const al = $('album'); al.innerHTML = ''; for (const c of G.album) al.appendChild(c);
 }
 // one click from the title to the cockpit: Play and Continue fly the next open flight; the map stays one button away
@@ -4948,6 +4991,17 @@ $('b-sound').addEventListener('click', () => { audioInit(); SET.muted = !SET.mut
 $('b-lang').addEventListener('click', () => setLang(SET.lang === 'tr' ? 'en' : 'tr'));
 for (const s of ['seg-lang', 'seg-lang2']) $(s).addEventListener('click', e => { const b = e.target.closest('button'); if (b) setLang(b.dataset.l); });
 $('seg-q').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setQuality(b.dataset.q); });
+$('b-a11y').addEventListener('click', () => { sfx.click(); if (ARENA) ARENA.openSettings(); });
+for (const id of ['b-rshare', 'b-eshare']) $(id).addEventListener('click', () => { sfx.click(); if (ARENA && G.share) ARENA.share(G.share); });
+function arenaAward(id, key) { if (ARENA && !FLAG.auto && !FLAG.nosave) ARENA.award(id, t(key)); }
+if (ARENA) {
+  // The ♿ corner button would sit on the burner / vent controls (bottom right), so the panel opens from
+  // Settings > Accessibility. A hidden tab already freezes the loop and the audio; in flight it now also opens the pause menu.
+  ARENA.on('pause', () => { if (!FLAG.auto && G.screen === 'play' && !G.paused && !(G.F && G.F.over)) togglePause(); });
+  ARENA.on('settings', s => { G.reduced = !!s.reducedMotion; if (G.reduced) G.cam.shake = 0; });
+  G.reduced = !!ARENA.settings.reducedMotion;
+  const others = ARENA.games.filter(g => g !== ARENA_ID); $('a-eother').href = 'https://furkiozknn.github.io/' + others[Math.floor(Date.now() / 86400000) % others.length] + '/';
+} else for (const id of ['b-a11y', 'b-rshare', 'b-eshare', 'a-eother']) $(id).hidden = true;
 $('b-full').addEventListener('click', () => { try { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); } catch (e) { /* not allowed */ } });
 for (const [id, key] of [['r-master', 'master'], ['r-music', 'music'], ['r-sfx', 'sfx']]) $(id).addEventListener('input', e => { SET[key] = +e.target.value; saveSettings(); auVolumes(); });
 $('mapcv').addEventListener('click', e => {
