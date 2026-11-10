@@ -1,0 +1,17 @@
+{
+  "game": "kapadokya-balonu",
+  "recorded": "2026-11-10T00:27:23.657Z",
+  "commit": "da1d207",
+  "entrySha": "b1d6692cdab3",
+  "run": "() => { for (let i = 0; i < 600 && !window.kapadokyaSim(10).bot.done; i++); }",
+  "metrics": {
+    "flights": 12,
+    "stars": 36,
+    "landScore": 973,
+    "fuelLeft": 586,
+    "flightTime": 3002,
+    "tries": 12,
+    "done": true,
+    "gameErrors": 0
+  }
+}
