@@ -2148,7 +2148,7 @@ a.btn { text-decoration: none; }
   <div class="hint glass" id="hint" hidden></div>
   <div class="coach glass" id="coach" hidden><ol id="coach-l"></ol><button class="skip" id="b-skiptips" data-t="skipTips"></button></div>
   <div class="pfact glass" id="pfact" hidden></div>
-  <div class="toasts" id="toasts"></div>
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
   <div class="flash" id="flash"></div>
   <div class="polaroid" id="polaroid" hidden><canvas id="snap" width="330" height="219"></canvas><span id="snap-t"></span></div>
   <div class="vf" id="vf" hidden>
@@ -3013,7 +3013,7 @@ const I18N = {
     badgeFirst: 'İlk iniş', badge3: 'Üç yıldızlı uçuş', badgeAll: 'Vadinin pilotu',
     golden: 'Altın Saat', goldenBtn: 'Altın Saat fotoğrafı (K)', vfShoot: 'Deklanşör (K / Enter)', vfClose: 'Vizörü kapat (Esc)',
     vfFilm: 'Film {n}/{m}', vfSlow: 'Ağır çekim {s} sn', vfSlowOut: 'Ağır çekim hakkı bitti', vfSun: 'Güneş {e}°', vfGold: 'altın ışık', vfHarsh: 'sert ışık',
-    vfLevel: 'Ufuk {r}°', vfHelp: 'K / Enter: çek · ok tuşları ya da sürükle: kadraj · + / −: yakınlaş · Esc: kapat · brülör ve supap çalışır',
+    vfLevel: 'Ufuk {r}°', vfHelp: 'K / Enter: çek · ok tuşları ya da sürükle: kadraj · + / −: yakınlaş · Esc: kapat · brülör ve supap çalışır', vfHelpTouch: 'Deklanşöre dokun: çek · sürükle: kadraj · iki parmak: yakınlaş · X: kapat · brülör ve supap solda',
     noFilm: 'Film bitti: her uçuşta {m} kare', pLight: 'Işık', pThirds: 'Üçte bir', pHorizon: 'Ufuk', pVariety: 'Çeşit/mesafe',
     shotScore: 'Kare puanı {s}/100', shotSaved: 'Albüme girdi!', k_chimney: 'peribacası', k_balloon: 'balon', k_landmark: 'yapı', k_none: 'konu yok', subjLbl: 'Konu',
     gallery: 'Albüm', galTitle: 'Altın Saat Albümü', galCount: '{n}/{m} kare',
@@ -3065,7 +3065,7 @@ const I18N = {
     badgeFirst: 'First landing', badge3: 'Three-star flight', badgeAll: 'Pilot of the valley',
     golden: 'Golden Hour', goldenBtn: 'Golden Hour photo (K)', vfShoot: 'Shutter (K / Enter)', vfClose: 'Close the viewfinder (Esc)',
     vfFilm: 'Film {n}/{m}', vfSlow: 'Slow motion {s} s', vfSlowOut: 'Slow motion used up', vfSun: 'Sun {e}°', vfGold: 'golden light', vfHarsh: 'harsh light',
-    vfLevel: 'Horizon {r}°', vfHelp: 'K / Enter: shoot · arrows or drag: frame · + / −: zoom · Esc: close · burner and vent still work',
+    vfLevel: 'Horizon {r}°', vfHelp: 'K / Enter: shoot · arrows or drag: frame · + / −: zoom · Esc: close · burner and vent still work', vfHelpTouch: 'Tap the shutter: shoot · drag: frame · pinch: zoom · X: close · burner and vent on the left',
     noFilm: 'Out of film: {m} frames per flight', pLight: 'Light', pThirds: 'Thirds', pHorizon: 'Horizon', pVariety: 'Variety/range',
     shotScore: 'Shot score {s}/100', shotSaved: 'Added to the album!', k_chimney: 'fairy chimney', k_balloon: 'balloon', k_landmark: 'landmark', k_none: 'no subject', subjLbl: 'Subject',
     gallery: 'Album', galTitle: 'Golden Hour Album', galCount: '{n}/{m} shots',
@@ -3079,7 +3079,7 @@ const COARSE = matchMedia('(pointer:coarse)');
 function t(k, vars) {
   const L = I18N[SET.lang] || I18N.en, touch = COARSE.matches;
   let s = (touch && (L[k + 'Touch'] ?? I18N.en[k + 'Touch'])) || (L[k] ?? I18N.en[k] ?? k);
-  if (touch && typeof s === 'string') s = s.replace(/ \((?:[A-Z]|Space|Boşluk)\)/g, '');
+  if (touch && typeof s === 'string') s = s.replace(/ \((?:[A-Z]|Space|Boşluk|Esc|[A-Z] \/ Enter)\)/g, '');
   if (vars) for (const v in vars) s = s.split('{' + v + '}').join(vars[v]);
   return s;
 }
