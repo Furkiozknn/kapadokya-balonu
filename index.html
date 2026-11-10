@@ -432,6 +432,43 @@ b, .num { font-variant-numeric: tabular-nums; }
   background: var(--green);
   box-shadow: 0 0 8px var(--green-glow);
 }
+/* Direction-based wind layer color fills and accessible shape symbols */
+.lrow.dir-good { background: rgba(69, 184, 100, 0.16); }
+.lrow.dir-bad { background: rgba(255, 77, 77, 0.12); }
+.lrow.dir-cross-r { background: rgba(245, 179, 66, 0.12); }
+.lrow.dir-cross-l { background: rgba(62, 139, 255, 0.12); }
+.l-sym {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 4px;
+  margin-left: auto;
+  margin-right: 4px;
+  line-height: 1;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--ink);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  z-index: 2;
+}
+.lrow.dir-good .l-sym { color: #8bf0a0; background: rgba(69, 184, 100, 0.28); border-color: var(--green); }
+.lrow.dir-bad .l-sym { color: #ff9999; background: rgba(255, 77, 77, 0.24); border-color: var(--red); }
+.lrow.dir-cross-r .l-sym { color: var(--gold-ink); background: rgba(245, 179, 66, 0.24); border-color: var(--gold); }
+.lrow.dir-cross-l .l-sym { color: #93c5fd; background: rgba(62, 139, 255, 0.24); border-color: var(--blue); }
+/* Colorblind mode active: display shape symbols clearly without relying solely on red/green */
+.cb-mode .l-sym, #ui.cb-mode .l-sym, .ladder.cb-mode .l-sym { display: inline-flex !important; }
+.cb-mode .lrow.good, .cb-mode .lrow.dir-good { color: #9fe2ff; background: rgba(62, 139, 255, 0.22); }
+.cb-mode .lrow.good svg, .cb-mode .lrow.dir-good svg { color: #3E8BFF; filter: drop-shadow(0 0 6px rgba(62, 139, 255, 0.5)); }
+.cb-mode .lrow.good::after { display: none; }
+.cb-mode .lrow.dir-good .l-sym { color: #dbeafe; background: rgba(62, 139, 255, 0.38); border-color: #60a5fa; box-shadow: 0 0 8px rgba(62, 139, 255, 0.5); }
+.cb-mode .lrow.bad, .cb-mode .lrow.dir-bad { color: #ffd0b0; background: rgba(255, 107, 43, 0.22); }
+.cb-mode .lrow.bad svg, .cb-mode .lrow.dir-bad svg { color: #FF6B2B; }
+.cb-mode .lrow.dir-bad .l-sym { color: #ffedd5; background: rgba(255, 107, 43, 0.38); border-color: #fb923c; box-shadow: 0 0 8px rgba(255, 107, 43, 0.4); }
 .lmark {
   position: absolute;
   left: -28px;
@@ -1566,6 +1603,7 @@ input[type=range] {
   .lrow { font-size: 10px; gap: 2px; padding-left: 3px; }
   .lrow svg { width: 16px; height: 16px; flex-basis: 16px; }
   .lrow .wd { width: 28px; height: 28px; margin-top: -14px; left: -1px; }
+  .lrow .l-sym { width: 14px; height: 14px; font-size: 8.5px; margin-right: 2px; }
   #l-here { display: none; }
   .lband span { display: none; }
   .lmark { left: -22px; width: 22px; }
@@ -1639,6 +1677,7 @@ input[type=range] {
 @media (max-height: 520px) {
   .ladder { top: calc(62px + var(--sa-t)); width: 120px; padding: 4px; }
   .lad { height: 140px; }
+  .lrow .l-sym { width: 13px; height: 13px; font-size: 8px; }
   .compass { display: none; }
   #l-here { display: none; }
   .brand span { display: none; }
@@ -2317,6 +2356,7 @@ a.btn { text-decoration: none; }
       <div class="row"><span class="lbl" data-t="language"></span><div class="seg" id="seg-lang2"><button data-l="tr">TR</button><button data-l="en">EN</button></div></div>
       <div class="row"><span class="lbl" data-t="quality"></span><div class="seg" id="seg-q"><button data-q="low" data-t="low"></button><button data-q="high" data-t="high"></button></div></div>
       <div class="row"><span class="lbl" data-t="tips"></span><div class="seg" id="seg-tips"><button data-v="on" data-t="on"></button><button data-v="off" data-t="off"></button></div></div>
+      <div class="row"><span class="lbl" data-t="colorblind"></span><div class="seg" id="seg-cb"><button data-v="on" data-t="on"></button><button data-v="off" data-t="off"></button></div></div>
       <button class="btn w" id="b-full"><svg><use href="#i-full"/></svg><span data-t="fullscreen"></span></button>
       <button class="btn w" id="b-a11y"><span data-t="a11y"></span></button>
       <button class="btn primary w" id="b-sclose"><svg><use href="#i-back"/></svg><span data-t="back"></span></button>
@@ -2975,6 +3015,7 @@ const FLAG = {
   lang: Q.get('lang'), nosave: Q.has('nosave'), flight: parseInt(Q.get('flight') || '0', 10) || 0, noassets: Q.has('noassets'),
   speed: parseFloat(Q.get('speed') || '0') || 0, cam: Q.get('cam'),
   daily: Q.has('daily') ? (/^\d{4}-\d{2}-\d{2}$/.test(Q.get('daily') || '') ? Q.get('daily') : 'today') : null,
+  colorblind: Q.has('colorblind') || Q.has('cb'),
 };
 // Arena shared layer (inline classic script above the import map); every use below is optional
 const ARENA = window.Arena && window.Arena.version ? window.Arena : null;
@@ -2997,7 +3038,8 @@ const KEY = 'arena.kapadokya.';
 function load(k, def) { try { const v = localStorage.getItem(KEY + k); return v ? Object.assign(def, JSON.parse(v)) : def; } catch (e) { return def; } }
 function store(k, v) { if (FLAG.nosave || FLAG.auto) return; try { localStorage.setItem(KEY + k, JSON.stringify(v)); } catch (e) { /* private mode */ } }
 const isPhone = matchMedia('(pointer:coarse)').matches && Math.min(screen.width, screen.height) < 820;
-const SET = load('settings', { master: 0.8, music: 0.6, sfx: 0.8, lang: 'tr', quality: isPhone ? 'low' : 'high', musicOn: true, sfxOn: true, muted: false, tips: true });
+const SET = load('settings', { master: 0.8, music: 0.6, sfx: 0.8, lang: 'tr', quality: isPhone ? 'low' : 'high', musicOn: true, sfxOn: true, muted: false, tips: true, colorblind: false });
+if (FLAG.colorblind) SET.colorblind = true;
 if (FLAG.lang === 'tr' || FLAG.lang === 'en') SET.lang = FLAG.lang;
 if (FLAG.low) SET.quality = 'low';
 const NF = C.FLIGHTS.length;
@@ -3084,6 +3126,7 @@ const I18N = {
     dailyFlight: 'Günlük Uçuş', mapShort: 'Harita', notebook: 'Vadi Defteri', didYouKnow: 'Biliyor muydun?', newCard: 'Yeni defter kartı',
     noteLocked: 'Kilitli: bir hedef fotoğrafı çek ya da bir uçuşu bitir.', notesCount: '{n}/{m} kart',
     tips: 'İpuçları', on: 'Açık', off: 'Kapalı', skipTips: 'İpuçlarını geç', tipsOff: 'İpuçları kapandı (Ayarlar’dan açılır)',
+    colorblind: 'Renk körü modu', dir_good: 'Hedefe esen katman', dir_bad: 'Ters esen katman', dir_cross_r: 'Sağ yan rüzgâr', dir_cross_l: 'Sol yan rüzgâr',
     coach1: 'Brülörü basılı tut, havalan', coach2: 'Bir katman çizgisini geç, merdiveni oku: yeşil ok hedefe eser',
     coach3: 'Supapla (V) yeşil katmana in', coach4: 'Tarlaya yaklaşınca brülörü erken bırak', coachDone: 'Harika, artık pilotsun!',
     pibal: 'Pibal', pibalOut: 'Pilot balonu bırakıldı: yükselirken rüzgârı okuyacak', pibalWait: 'Pilot balonu {s} sn sonra hazır',
@@ -3136,6 +3179,7 @@ const I18N = {
     dailyFlight: 'Daily Flight', mapShort: 'Map', notebook: 'Valley Notebook', didYouKnow: 'Did you know?', newCard: 'New notebook card',
     noteLocked: 'Locked: take a goal photo or finish a flight.', notesCount: '{n}/{m} cards',
     tips: 'Tips', on: 'On', off: 'Off', skipTips: 'Skip tips', tipsOff: 'Tips are off (turn them on in Settings)',
+    colorblind: 'Colorblind mode', dir_good: 'Layer towards goal', dir_bad: 'Layer away from goal', dir_cross_r: 'Right crosswind', dir_cross_l: 'Left crosswind',
     coach1: 'Hold the burner to lift off', coach2: 'Cross a layer line and read the ladder: green blows to the goal',
     coach3: 'Vent (V) down into the green layer', coach4: 'Near the field, let go of the burner early', coachDone: 'Great, you are a pilot now!',
     pibal: 'Pibal', pibalOut: 'Pilot balloon away: it reads the wind as it climbs', pibalWait: 'Pilot balloon ready in {s} s',
@@ -4262,6 +4306,7 @@ function camYaw() { return G.cam.mode === 'map' ? 0 : G.cam.yaw; }
 // HUD: top bar, wind ladder, goals, instruments
 // ---------------------------------------------------------------------------
 const LAD_MAX = 450;
+const LAYER_SYMS = ['▲', '▼', '◆', '■'];
 function buildLadder(F) {
   const el = $('lad'), H = el.clientHeight || 300;
   let html = '<div class="lscale">';
@@ -4269,11 +4314,13 @@ function buildLadder(F) {
   html += '</div><div class="lgnd" id="l-gnd"></div>';
   F.layers.forEach((L, k) => {
     const lo = k ? F.layers[k - 1].top : 0, hi = Math.min(L.top, LAD_MAX);
-    html += `<div class="lrow" id="lr${k}" style="bottom:${lo / LAD_MAX * 100}%;height:${(hi - lo) / LAD_MAX * 100}%"><i class="wd"></i><svg><use href="#i-arrow"/></svg><span></span></div>`;
+    const defSym = LAYER_SYMS[k % 4];
+    html += `<div class="lrow" id="lr${k}" style="bottom:${lo / LAD_MAX * 100}%;height:${(hi - lo) / LAD_MAX * 100}%"><i class="wd"></i><svg><use href="#i-arrow"/></svg><span></span><span class="l-sym" aria-label="direction-symbol">${defSym}</span></div>`;
   });
   F.goals.forEach((g, k) => { if (g.t === 'photo') html += `<div class="lband" id="lb${k}" style="bottom:${(g.h - 20) / LAD_MAX * 100}%;height:${40 / LAD_MAX * 100}%"><span>${t('photo')}</span></div>`; });
   html += '<div class="lmark" id="l-mark"><svg><use href="#i-balloon"/></svg></div>';
   el.innerHTML = html;
+  $('ladder').classList.toggle('cb-mode', !!SET.colorblind);
 }
 function buildGoalPanel(F) {
   const el = $('gpanel'); let html = '';
@@ -4309,9 +4356,12 @@ function updateHUD(dt, force) {
     const row = $('lr' + k); if (!row) return;
     const lo = k ? F.layers[k - 1].top : 0, hi = Math.min(L.top, LAD_MAX), my = (lo + hi) / 2, ay = Math.max(my, ground(S.x, S.z) + 30);
     const wd = row.querySelector('.wd');
+    const symEl = row.querySelector('.l-sym');
     if (!REVEAL[k]) { // unsampled layer: release a pibal (B) or fly into it
       row.className = 'lrow unk' + (k === kc ? ' cur' : '') + (G.gustRow === k ? ' gust' : '');
-      row.querySelector('span').textContent = '?'; wd.style.background = 'none'; return;
+      row.querySelector('span').textContent = '?'; wd.style.background = 'none';
+      if (symEl) { symEl.textContent = '?'; symEl.removeAttribute('title'); }
+      return;
     }
     const w = C.windAt(F, S.x, ay, S.z, F.t, false), dir = C.bearing(w.x, w.z), sp = Math.hypot(w.x, w.z);
     row.querySelector('svg').style.transform = `rotate(${dir - yawC}deg)`;
@@ -4321,8 +4371,24 @@ function updateHUD(dt, force) {
       wd.style.background = `conic-gradient(from ${md - yawC - a}deg, rgba(150,195,250,${0.35 + 0.35 * gu}) 0deg ${2 * a}deg, transparent ${2 * a}deg)`;
       row.querySelector('span').textContent = `${Math.round(ms)}±${Math.round(ms * 0.32 * gu)} km/h`;
     } else { wd.style.background = 'none'; row.querySelector('span').textContent = `${Math.round(sp * 3.6)} km/h`; }
-    let diff = Math.abs(((dir - tb) % 360 + 540) % 360 - 180);
-    row.className = 'lrow' + (k === kc ? ' cur' : '') + (diff < 35 ? ' good' : '') + (G.gustRow === k ? ' gust' : '');
+    let rel = ((dir - tb) % 360 + 540) % 360 - 180;
+    let diff = Math.abs(rel);
+    let sym = '◆', dirCls = 'dir-cross-r', dirKey = 'dir_cross_r';
+    if (diff < 45) {
+      sym = '▲'; dirCls = 'dir-good'; dirKey = 'dir_good';
+    } else if (diff > 135) {
+      sym = '▼'; dirCls = 'dir-bad'; dirKey = 'dir_bad';
+    } else if (rel > 0) {
+      sym = '◆'; dirCls = 'dir-cross-r'; dirKey = 'dir_cross_r';
+    } else {
+      sym = '■'; dirCls = 'dir-cross-l'; dirKey = 'dir_cross_l';
+    }
+    if (symEl) {
+      symEl.textContent = sym;
+      symEl.title = t(dirKey);
+      symEl.setAttribute('aria-label', sym);
+    }
+    row.className = 'lrow ' + dirCls + (k === kc ? ' cur' : '') + (diff < 35 ? ' good' : '') + (G.gustRow === k ? ' gust' : '');
   });
   $('l-mark').style.top = ((1 - clamp(S.y, 0, LAD_MAX) / LAD_MAX) * 100) + '%';
   $('l-gnd').style.height = (clamp(ground(S.x, S.z), 0, LAD_MAX) / LAD_MAX * 100) + '%';
@@ -4331,10 +4397,11 @@ function updateHUD(dt, force) {
   $('l-here').textContent = `${Math.round(Math.hypot(wh.x, wh.z) * 3.6)} km/h`;
   // compass (ink tokens so the dial reads on both light and dark parchment)
   const nRot = -yawC, gRot = tb - yawC, wRot = C.bearing(wh.x, wh.z) - yawC;
+  const compassWindCol = SET.colorblind ? '#3E8BFF' : 'var(--green)';
   $('compass').innerHTML = `<circle cx="32" cy="32" r="29" fill="var(--wash2)" stroke="var(--line)"/>` +
     `<g transform="rotate(${nRot} 32 32)"><text x="32" y="13" text-anchor="middle" font-size="10" font-weight="700" fill="var(--ink)">N</text><path d="M32 4 L35 9 L29 9Z" fill="var(--red)"/></g>` +
     `<g transform="rotate(${gRot} 32 32)"><path d="M32 7 L37 17 L27 17Z" fill="var(--gold-ink)"/></g>` +
-    `<g transform="rotate(${wRot} 32 32)"><path d="M32 14 L38 40 L32 35 L26 40Z" fill="var(--green)"/></g>`;
+    `<g transform="rotate(${wRot} 32 32)"><path d="M32 14 L38 40 L32 35 L26 40Z" fill="${compassWindCol}"/></g>`;
   // goals panel
   F.goals.forEach((g, k) => {
     const row = $('gr' + k); if (!row) return;
@@ -4831,6 +4898,10 @@ function applyTexts() {
   for (const s of ['seg-lang', 'seg-lang2']) $(s).querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.l === SET.lang));
   $('seg-q').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.q === SET.quality));
   $('seg-tips').querySelectorAll('button').forEach(b => b.classList.toggle('on', (b.dataset.v === 'on') === (SET.tips !== false)));
+  const cbOn = !!SET.colorblind;
+  if ($('seg-cb')) $('seg-cb').querySelectorAll('button').forEach(b => b.classList.toggle('on', (b.dataset.v === 'on') === cbOn));
+  if ($('ladder')) $('ladder').classList.toggle('cb-mode', cbOn);
+  document.documentElement.classList.toggle('cb-mode', cbOn);
   buildCoach();
   if (!$('ov-notes').hidden) buildNotes();
   if (!$('ov-gallery').hidden) buildGallery();
@@ -5071,6 +5142,7 @@ $('b-pnotes').addEventListener('click', () => { sfx.click(); openNotes(); });
 $('b-nclose').addEventListener('click', closeNotes);
 $('b-skiptips').addEventListener('click', () => { SET.tips = false; saveSettings(); COACH.on = false; buildCoach(); $('coach').hidden = true; toast(t('tipsOff'), 'info'); canvas.focus(); });
 $('seg-tips').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; SET.tips = b.dataset.v === 'on'; saveSettings(); applyTexts(); });
+$('seg-cb').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; SET.colorblind = b.dataset.v === 'on'; saveSettings(); applyTexts(); if (G.F) updateHUD(0, true); });
 $('c-pibal').addEventListener('click', () => { audioInit(); launchPibal(); });
 $('b-settings').addEventListener('click', () => { audioInit(); openSettings(); });
 $('b-psettings').addEventListener('click', openSettings);
@@ -5255,7 +5327,7 @@ function exportState() {
     layer: S ? C.layerIndex(F, S.y) : -1, goals: F ? F.goals.map(g => ({ t: g.t, done: g.done, fail: g.fail })) : [], damage: F ? Math.round(F.damage) : 0,
     stars: Array.from({ length: NF }, (_, i) => PROG.stars[i] || 0), totalStars: totalStars(), done: Array.from({ length: NF }, (_, i) => !!PROG.done[i]),
     bot: { auto: FLAG.auto, done: AUTO.done, log: BOTLOG.slice() }, fps: DBG.fps, drawCalls: DBG.calls, triangles: DBG.tris, gpu: DBG.gpu,
-    errors: window.__errs.slice(), assets: ASSETS, quality: SET.quality, world: { chimneys: C.CH.length, windows: WORLD.windows, houses: WORLD.houses, trees: WORLD.trees },
+    errors: window.__errs.slice(), assets: ASSETS, quality: SET.quality, colorblind: !!SET.colorblind, world: { chimneys: C.CH.length, windows: WORLD.windows, houses: WORLD.houses, trees: WORLD.trees },
     revealed: F ? REVEAL.slice() : [], pibals: PIBAL.list.length, pibalReadyIn: F ? +Math.max(0, PIBAL.next - F.t).toFixed(1) : 0,
     coach: { on: COACH.on, step: COACH.step, done: COACH.done, ticks: COACH.ticks.slice() },
     notes: PROG.notes.slice(), flightNotes: G.flightNotes.slice(),
@@ -5273,7 +5345,8 @@ window.kapadokyaSim = (seconds) => {
   G.simming = false; exportState(); return window.kapadokya;
 };
 window.kapadokyaDebug = { G, togglePause, openSettings, C, startFlight, openEnd, openMap, showResult, cycleCam, setQuality, PROG, openNotes, launchPibal, startDaily, dailyInfo, COACH, REVEAL, LAUNCH,
-  VF, ALBUM, GOLD, openVF, closeVF, shootVF, scoreFrame, measureFrame, openGallery };
+  VF, ALBUM, GOLD, openVF, closeVF, shootVF, scoreFrame, measureFrame, openGallery,
+  setColorblind: (cb) => { SET.colorblind = !!cb; saveSettings(); applyTexts(); if (G.F) updateHUD(0, true); } };
 function debugText() {
   const e = window.__errs, F = G.F;
   $('dbg').innerHTML = `fps ${DBG.fps}  calls ${DBG.calls}  tris ${DBG.tris}\n${DBG.gpu}\nscreen ${G.screen}  flight ${F ? G.idx + 1 : '-'}  t ${F ? F.t.toFixed(0) : 0}  alt ${F ? F.S.y.toFixed(0) : 0}  x${G.speed}\nbot ${FLAG.auto ? BOTLOG.length + '/12' : 'off'} ${AUTO.done ? 'DONE' : ''}  stars ${totalStars()}` +
