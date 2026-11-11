@@ -5315,15 +5315,23 @@ function render(dt) {
     const burning = G.inp && G.inp.burn && S.fuel > 0 && !F.over;
     PLAYER.heat += ((burning ? 1 : 0) - PLAYER.heat) * Math.min(1, dt * 8);
     PLAYER.flame.visible = PLAYER.heat > 0.05; PLAYER.flame.scale.set(1.1 + PLAYER.heat * 0.6, (1.6 + PLAYER.heat * 2.6) * (0.9 + Math.random() * 0.2), 1);
-    PLAYER.light.intensity = PLAYER.heat * 60; PLAYER.envMat.emissiveIntensity = PLAYER.heat * 0.28 + clamp((S.T - 60) / 64, 0, 1) * 0.05;
+    // Envelope internal burner glow juice: dynamically modulate emissive intensity with organic flame flicker and thermal warmth
+    const burnerFlicker = burning ? (0.92 + 0.08 * Math.sin(G.time * 28 + Math.sin(G.time * 44))) : 1;
+    const burnerGlow = PLAYER.heat * 0.58 * burnerFlicker;
+    const heatGlow = clamp((S.T - 60) / 64, 0, 1) * 0.08;
+    PLAYER.light.intensity = PLAYER.heat * (75 + 15 * (burnerFlicker - 0.92) / 0.08);
+    PLAYER.envMat.emissiveIntensity = burnerGlow + heatGlow;
     if (burning && Math.random() < 0.3) emit(S.x + (Math.random() - 0.5), S.y + 5, S.z + (Math.random() - 0.5), 0, 4, 0, 0.35, 1.1, 0xffc060, 0.7, 0);
   } else if (G.screen === 'end') {
     const L = C.REGIONS[0].launch; fx = L.x; fz = L.z; fy = ground(L.x, L.z);
-    PLAYER.grp.position.set(L.x, fy, L.z - 20); PLAYER.flame.visible = Math.sin(G.time * 1.3) > 0.6; PLAYER.light.intensity = PLAYER.flame.visible ? 40 : 0; PLAYER.basket.visible = true;
+    const fl = Math.sin(G.time * 1.3) > 0.6;
+    PLAYER.grp.position.set(L.x, fy, L.z - 20); PLAYER.flame.visible = fl; PLAYER.light.intensity = fl ? 50 : 0;
+    PLAYER.envMat.emissiveIntensity = fl ? 0.45 : 0; PLAYER.basket.visible = true;
   } else {
     const L = C.REGIONS[0].launch; fx = L.x; fz = L.z; fy = ground(L.x, L.z);
     PLAYER.grp.position.set(L.x, fy + Math.max(0, Math.sin(G.time * 0.08)) * 26, L.z); PLAYER.basket.visible = true;
-    const fl = Math.sin(G.time * 2.1) > 0.3; PLAYER.flame.visible = fl; PLAYER.light.intensity = fl ? 45 : 0; PLAYER.envMat.emissiveIntensity = fl ? 0.25 : 0;
+    const fl = Math.sin(G.time * 2.1) > 0.3; PLAYER.flame.visible = fl; PLAYER.light.intensity = fl ? 50 : 0;
+    PLAYER.envMat.emissiveIntensity = fl ? 0.45 : 0;
   }
   LAUNCH.t += gdt;
   if (!play && G.screen !== 'end' && LAUNCH.t > 85) setupLaunch(C.REGIONS[0].launch.x, C.REGIONS[0].launch.z); // title loops the dawn launch
@@ -5382,6 +5390,7 @@ function exportState() {
   Object.assign(window.kapadokya, {
     screen: G.screen, flight: F ? G.idx + 1 : 0, time: F ? +F.t.toFixed(1) : 0, cam: G.cam.mode, speed: G.speed,
     alt: S ? +S.y.toFixed(1) : 0, agl: S ? +S.agl.toFixed(1) : 0, vy: S ? +S.vy.toFixed(2) : 0, temp: S ? +S.T.toFixed(1) : 0, fuelPct: S ? Math.round(S.fuel / F.D.fuel * 100) : 0,
+    envelopeGlow: +(PLAYER.envMat ? PLAYER.envMat.emissiveIntensity : 0).toFixed(2), burnerHeat: +(PLAYER.heat || 0).toFixed(2),
     layer: S ? C.layerIndex(F, S.y) : -1, goals: F ? F.goals.map(g => ({ t: g.t, done: g.done, fail: g.fail })) : [], damage: F ? Math.round(F.damage) : 0,
     stars: Array.from({ length: NF }, (_, i) => PROG.stars[i] || 0), totalStars: totalStars(), done: Array.from({ length: NF }, (_, i) => !!PROG.done[i]),
     bot: { auto: FLAG.auto, done: AUTO.done, log: BOTLOG.slice() }, fps: DBG.fps, drawCalls: DBG.calls, triangles: DBG.tris, gpu: DBG.gpu,
@@ -5403,7 +5412,7 @@ window.kapadokyaSim = (seconds) => {
   G.simming = false; exportState(); return window.kapadokya;
 };
 window.kapadokyaDebug = { G, togglePause, openSettings, C, startFlight, openEnd, openMap, showResult, cycleCam, setQuality, PROG, openNotes, launchPibal, startDaily, dailyInfo, COACH, REVEAL, LAUNCH,
-  VF, ALBUM, GOLD, openVF, closeVF, shootVF, scoreFrame, measureFrame, openGallery,
+  VF, ALBUM, GOLD, openVF, closeVF, shootVF, scoreFrame, measureFrame, openGallery, PLAYER,
   setColorblind: (cb) => { SET.colorblind = !!cb; saveSettings(); applyTexts(); if (G.F) updateHUD(0, true); },
   setHaptics: (h) => { SET.haptics = !!h; saveSettings(); applyTexts(); },
   settings: SET };
