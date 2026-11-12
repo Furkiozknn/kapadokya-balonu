@@ -2431,7 +2431,9 @@ window.addEventListener('error', e => { window.__errs.push(String(e.message || e
 window.addEventListener('unhandledrejection', e => { window.__errs.push('Promise: ' + String(e.reason && e.reason.message || e.reason)); });
 (function () {
   const q = new URLSearchParams(location.search).get('lang');
-  const tr = q ? q === 'tr' : true;
+  // same order as the game: ?lang=, then the saved setting, then the browser language
+  let saved = null; try { saved = JSON.parse(localStorage.getItem('arena.kapadokya.settings') || 'null'); } catch (e) {}
+  const tr = q === 'tr' || q === 'en' ? q === 'tr' : saved && (saved.lang === 'tr' || saved.lang === 'en') ? saved.lang === 'tr' : /^tr/i.test(navigator.language || '');
   document.getElementById('loadmsg').textContent = tr ? 'Yükleniyor… 0/1' : 'Loading… 0/1';
   setTimeout(() => { if (!window.__loaded) document.getElementById('loadmsg').textContent = tr ? 'Three.js yüklenemedi; internet bağlantısını kontrol et.' : 'Three.js could not load; check your connection.'; }, 20000);
 })();
@@ -3051,7 +3053,7 @@ const KEY = 'arena.kapadokya.';
 function load(k, def) { try { const v = localStorage.getItem(KEY + k); return v ? Object.assign(def, JSON.parse(v)) : def; } catch (e) { return def; } }
 function store(k, v) { if (FLAG.nosave || FLAG.auto) return; try { localStorage.setItem(KEY + k, JSON.stringify(v)); } catch (e) { /* private mode */ } }
 const isPhone = matchMedia('(pointer:coarse)').matches && Math.min(screen.width, screen.height) < 820;
-const SET = load('settings', { master: 0.8, music: 0.6, sfx: 0.8, lang: 'tr', quality: isPhone ? 'low' : 'high', musicOn: true, sfxOn: true, muted: false, tips: true, colorblind: false, haptics: true });
+const SET = load('settings', { master: 0.8, music: 0.6, sfx: 0.8, lang: /^tr/i.test(navigator.language || '') ? 'tr' : 'en', quality: isPhone ? 'low' : 'high', musicOn: true, sfxOn: true, muted: false, tips: true, colorblind: false, haptics: true });
 if (FLAG.colorblind) SET.colorblind = true;
 if (FLAG.haptics !== null) SET.haptics = FLAG.haptics;
 if (FLAG.lang === 'tr' || FLAG.lang === 'en') SET.lang = FLAG.lang;
