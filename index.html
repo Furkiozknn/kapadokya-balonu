@@ -4040,6 +4040,7 @@ const G = {
   resultT: -1, endT: 0, hintT: 0, lastToast: {}, introT: 0, ending: false, dispFuel: 1,
   daily: null, flightNotes: [], gustT: 0, gustCD: 0, gustWarn: 0, gustRow: -1,
   reduced: false, share: null, // Arena "Reduce motion" (no camera shake, no shutter flash); what the open Share button shares
+  takeoffTO: null, hintTO: null,
 };
 // Input coach for flights 1-2: each step ticks only on the matching player input
 const COACH = { on: false, step: 0, done: false, ticks: [], burnT: 0, ventT: -99, layer0: -1, relT: 0, hideT: 0 };
@@ -4065,8 +4066,9 @@ function dailyInfo(date) {
 }
 function applyDaily(F, D) { F.layers = D.winds.map(L => ({ ...L, v: C.vecOf(L.dir, L.spd) })); }
 function startDaily(date) { const D = dailyInfo(date || todayStr()); startFlight(D.idx, D); }
-function restartFlight() { startFlight(G.idx, G.daily); }
+function restartFlight() { clearTimeout(G.takeoffTO); clearTimeout(G.hintTO); G.takeoffTO = G.hintTO = null; startFlight(G.idx, G.daily); }
 function startFlight(i, daily) {
+  clearTimeout(G.takeoffTO); clearTimeout(G.hintTO); G.takeoffTO = G.hintTO = null;
   G.daily = daily || null;
   G.idx = i; G.F = C.newFlight(i); C.botReset();
   if (G.daily) applyDaily(G.F, G.daily);
@@ -4087,11 +4089,17 @@ function startFlight(i, daily) {
   PLAYER.pax.visible = false; PLAYER.grp.visible = true;
   showOnly(null); $('ov-result').hidden = true; $('ov-end').hidden = true;
   for (const id of ['hud', 'ladder', 'gpanel', 'inst', 'ctl']) $(id).hidden = false;
+  // un-hide/rebuild coach overlay on flights 1-2
+  if (G.idx < 2 && COACH.on) { $('coach').hidden = false; buildCoach(); }
+  else $('coach').hidden = true;
   applyTexts(); audioInit(); music.startFlight(F);
   toast(G.daily ? t('dailyTitle', { d: G.daily.date }) + ` · ${L2(F.D.n)}` : `${L2(C.REGIONS[F.D.r].n)} · ${L2(F.D.n)}`, 'info');
-  if (!COACH.on) setTimeout(() => toast(t('liftHint'), 'info'), 900);
+  if (!COACH.on) G.takeoffTO = G.hintTO = setTimeout(() => { G.takeoffTO = G.hintTO = null; toast(t('liftHint'), 'info'); }, 900);
 }
-function hideHud() { for (const id of ['hud', 'ladder', 'gpanel', 'inst', 'ctl', 'hint', 'polaroid', 'coach', 'pfact']) $(id).hidden = true; }
+function hideHud() {
+  clearTimeout(G.takeoffTO); clearTimeout(G.hintTO); G.takeoffTO = G.hintTO = null;
+  for (const id of ['hud', 'ladder', 'gpanel', 'inst', 'ctl', 'hint', 'polaroid', 'coach', 'pfact']) $(id).hidden = true;
+}
 function stepFixed(h) {
   const F = G.F; if (!F || F.over) return;
   let inp;
@@ -4149,7 +4157,8 @@ function coachStep(F, inp, h) {
 }
 function buildCoach() {
   const el = $('coach');
-  if (!COACH.on) { el.hidden = true; return; }
+  if (!COACH.on || G.screen !== 'play') { el.hidden = true; return; }
+  el.hidden = false;
   $('coach-l').innerHTML = COACH_KEYS.map((key, i) => `<li class="${i < COACH.step ? 'ok' : i === COACH.step ? 'now' : ''}"><i>${i < COACH.step ? '<svg><use href="#i-ok"/></svg>' : i + 1}</i><span>${t(key)}</span></li>`).join('');
   $('coach-l').dataset.n = `${Math.min(COACH.step + 1, 4)}/4`;
   if (COACH.done) $('coach-l').innerHTML = `<li class="ok now"><i><svg><use href="#i-ok"/></svg></i><span>${t('coachDone')}</span></li>`;
@@ -4268,6 +4277,7 @@ function showResult() {
 }
 function mood(f) { return t(f < 20 ? 'calm' : f < 50 ? 'nervous' : 'scared'); }
 function nextFlight() {
+  clearTimeout(G.takeoffTO); clearTimeout(G.hintTO); G.takeoffTO = G.hintTO = null;
   $('ov-result').hidden = true;
   if (G.idx >= NF - 1) { openEnd(); return; }
   const n = G.idx + 1;
@@ -5171,6 +5181,7 @@ function setQuality(q) {
   applyTexts();
 }
 function toTitle() {
+  clearTimeout(G.takeoffTO); clearTimeout(G.hintTO); G.takeoffTO = G.hintTO = null;
   closeVF();
   if (G.screen !== 'title' && G.screen !== 'map') setupLaunch(C.REGIONS[0].launch.x, C.REGIONS[0].launch.z);
   placePeople(false); G.paused = false; G.screen = 'title'; G.F = null; G.daily = null; clearMarkers(); hideHud(); $('ov-result').hidden = true; $('ov-end').hidden = true; G.ending = false;
