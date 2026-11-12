@@ -3436,18 +3436,19 @@ function buildTerrain() {
 }
 
 function latheNI(pts, seg) { return new THREE.LatheGeometry(pts.map(([r, y]) => new THREE.Vector2(r, y)), seg); }
+const isLow = () => FLAG.low || SET.quality === 'low';
 function buildChimneys() {
-  const R = rng(91), n = C.CH.length;
+  const R = rng(91), n = C.CH.length, low = isLow();
   // 3 fairy chimney silhouettes (tapered cone, slender Paşabağ neck + bulbous cap, stepped column) with stratified tuff bands;
-  // ?low keeps the single classic archetype. R (rng(91)) is reserved for cave windows below so WORLD.windows stays identical.
-  const bShapes = FLAG.low ? [
+  // ?low / Low quality keeps the single classic archetype. R (rng(91)) is reserved for cave windows below so WORLD.windows stays identical.
+  const bShapes = low ? [
     [[1.0, 0], [0.97, 0.12], [0.86, 0.3], [0.74, 0.52], [0.62, 0.76], [0.52, 0.94], [0.5, 1.0]],
   ] : [
     [[1.0, 0], [0.97, 0.12], [0.86, 0.3], [0.74, 0.52], [0.62, 0.76], [0.52, 0.94], [0.5, 1.0]],
     [[1.04, 0], [0.94, 0.16], [0.78, 0.42], [0.58, 0.70], [0.44, 0.88], [0.48, 1.0]],
     [[1.02, 0], [0.98, 0.22], [0.83, 0.28], [0.80, 0.58], [0.64, 0.64], [0.57, 0.92], [0.53, 1.0]],
   ];
-  const cShapes = FLAG.low ? [
+  const cShapes = low ? [
     [[0.2, 0], [1.0, 0.16], [0.98, 0.42], [0.72, 0.72], [0.32, 0.94], [0, 1]],
   ] : [
     [[0.2, 0], [1.0, 0.16], [0.98, 0.42], [0.72, 0.72], [0.32, 0.94], [0, 1]],
@@ -3475,7 +3476,7 @@ function buildChimneys() {
     list.forEach((c, i) => {
       q.setFromAxisAngle(up, c.rot);
       M.compose(p.set(c.x, c.b, c.z), q, s.set(c.r, c.h, c.r)); body.setMatrixAt(i, M);
-      if (!FLAG.low) { qT.setFromAxisAngle(tiltAx, (c.k - 0.5) * 0.14); q.multiply(qT); }
+      if (!low) { qT.setFromAxisAngle(tiltAx, (c.k - 0.5) * 0.14); q.multiply(qT); }
       M.compose(p.set(c.x, c.b + c.h - 0.6, c.z), q, s.set(c.r * (0.74 + (gi === 1 ? 0.08 : 0)), 3.5 + c.k * 1.7, c.r * 0.76)); cap.setMatrixAt(i, M);
       body.setColorAt(i, tmpC.setHex(tones[((c.k * tones.length) + gi) % tones.length | 0]));
       cap.setColorAt(i, tmpC.setHex(capTones[((c.k * capTones.length) + gi) % capTones.length | 0]));
@@ -3501,7 +3502,7 @@ function buildChimneys() {
   WORLD.windows = wins.length;
 }
 function buildVillages() {
-  const R = rng(17), houses = [];
+  const R = rng(17), houses = [], low = isLow();
   const tryHouse = (x, z) => {
     if (Math.abs(z - C.riverZ(x)) < 35) return;
     for (const f of C.FIELDS) if (Math.hypot(x - f.x, z - f.z) < f.r + 12) return;
@@ -3536,9 +3537,9 @@ function buildVillages() {
   const mosque = new THREE.Mesh(mergeGeometries(parts), new THREE.MeshLambertMaterial({ vertexColors: true }));
   mosque.castShadow = mosque.receiveShadow = true; scene.add(mosque);
   WORLD.houses = houses.length;
-  // Cave, castle and village windows + lantern glow in Göreme and Uçhisar at early dawn, fading as the sun rises (skipped on ?low)
+  // Cave, castle and village windows + lantern glow in Göreme and Uçhisar at early dawn, fading as the sun rises (skipped on ?low / Low quality)
   const wins = WORLD.wins.slice(), Rw = rng(313);
-  if (!FLAG.low) {
+  if (!low) {
     for (const h of houses) {
       if (h[0] >= 580) continue; // only Göreme and Uçhisar villages
       const hy = ground(h[0], h[1]) - 0.5 + h[3] * 0.56, ca = Math.cos(h[5]), sa = Math.sin(h[5]), dz = h[4] * 0.5;
@@ -3546,26 +3547,26 @@ function buildVillages() {
     }
     for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2; wins.push([mx + Math.cos(a) * 1.9, gy + 20.1, mz + Math.sin(a) * 1.9, a, 0.75, 1]); }
   }
-  WORLD.dawnGlow = { value: FLAG.low || SET.quality === 'low' ? 0 : 1 };
+  WORLD.dawnGlow = { value: low ? 0 : 1 };
   const winMat = new THREE.MeshLambertMaterial({ vertexColors: true });
-  if (!FLAG.low) winMat.onBeforeCompile = sh => {
+  if (!low) winMat.onBeforeCompile = sh => {
     sh.uniforms.uLantern = WORLD.dawnGlow; sh.uniforms.uWinDark = { value: new THREE.Color(0x2e1d15) };
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', '#include <common>\nuniform float uLantern; uniform vec3 uWinDark;')
       .replace('#include <color_fragment>', '#include <color_fragment>\nfloat wLit = step(0.35, diffuseColor.r); vec3 wGlow = diffuseColor.rgb; diffuseColor.rgb = mix(diffuseColor.rgb, uWinDark, wLit * (1.0 - uLantern * 0.42));')
       .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += wGlow * (wLit * uLantern * 1.45);');
   };
-  const winG = prep(new THREE.BoxGeometry(1.2, 1.7, 0.7), FLAG.low ? 0x2e1d15 : 0xffffff);
+  const winG = prep(new THREE.BoxGeometry(1.2, 1.7, 0.7), low ? 0x2e1d15 : 0xffffff);
   const win = new THREE.InstancedMesh(winG, winMat, wins.length);
   const lTones = [0xffb448, 0xff9128, 0xffd070];
   wins.forEach((w, i) => {
     q.setFromAxisAngle(up, w[3]); M.compose(p.set(w[0], w[1], w[2]), q, s.set(w[4], w[4], 1)); win.setMatrixAt(i, M);
-    if (!FLAG.low) {
+    if (!low) {
       const lit = w[0] < 580 && (w[5] || Rw() < 0.72);
       win.setColorAt(i, tmpC.setHex(lit ? lTones[(Rw() * 3) | 0] : 0x2e1d15));
     }
   });
-  if (!FLAG.low) win.instanceColor.needsUpdate = true;
+  if (!low) win.instanceColor.needsUpdate = true;
   scene.add(win);
 }
 function buildTrees() {
@@ -3620,10 +3621,11 @@ function envelopeGeo(colA, colB, band) {
   g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.computeVertexNormals();
   return g;
 }
-// Envelope fabric shading: vertical gore & horizontal ring seams, billowed panels, warm sun side and cool shade side (skipped on ?low)
+// Envelope fabric shading: vertical gore & horizontal ring seams, billowed panels, warm sun side and cool shade side (skipped on ?low / Low quality)
 const ENV_UNI = { uSun: { value: SUN_DIR }, uFx: { value: SET.quality === 'low' ? 0 : 1 } };
 function shadeEnvelope(mat) {
-  if (FLAG.low) return mat;
+  const low = isLow();
+  if (low) return mat;
   mat.onBeforeCompile = sh => {
     sh.uniforms.uSun = ENV_UNI.uSun; sh.uniforms.uFx = ENV_UNI.uFx;
     sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vEP; varying vec3 vWN;')
@@ -3801,14 +3803,14 @@ function updateStreaks(F, dt, fx, fz) {
   STREAK.mesh.instanceMatrix.needsUpdate = true;
 }
 function tintStreaks() { for (let i = 0; i < STREAK.n; i++) STREAK.mesh.setColorAt(i, tmpC.setHex(LAYER_TINT[STREAK.list[i].k])); STREAK.mesh.instanceColor.needsUpdate = true; }
-// Layered atmospheric fog bands in valleys (4 valley-hugging mist bands on high quality; 3 plain fog sheets on ?low)
+// Layered atmospheric fog bands in valleys (4 valley-hugging mist bands on high quality; 3 plain fog sheets on ?low / Low quality)
 const FOG = { sheets: [], uVal: { value: 0.7 } };
 function buildFog() {
-  const n = FLAG.low ? 3 : 4;
+  const low = isLow(), n = low ? 3 : 4;
   for (let i = 0; i < n; i++) {
     const mat = new THREE.MeshBasicMaterial({ map: cloudTex.clone(), transparent: true, opacity: 0.6, depthWrite: false, color: 0xfff0ea });
     mat.map.wrapS = mat.map.wrapT = THREE.RepeatWrapping; mat.map.repeat.set(4 + (i % 2) * 2, 4 + (i % 2) * 2); mat.map.needsUpdate = true;
-    if (!FLAG.low) mat.onBeforeCompile = sh => {
+    if (!low) mat.onBeforeCompile = sh => {
       sh.uniforms.uVal = FOG.uVal;
       sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vFP; varying vec2 vLP;')
         .replace('#include <begin_vertex>', '#include <begin_vertex>\nvLP = transformed.xz; vFP = (modelMatrix * vec4(transformed, 1.0)).xyz;');
