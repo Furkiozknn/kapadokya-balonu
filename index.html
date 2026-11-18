@@ -3074,6 +3074,7 @@ window.ArenaCore = { version: VERSION, kalite, render, kabuk, his, kamera, test,
       <div class="row" style="justify-content:flex-end">
         <button class="btn" id="b-rshare"><span data-t="share"></span></button>
         <button class="btn" id="b-rmap"><svg><use href="#i-map"/></svg><span data-t="regionMap"></span></button>
+        <button class="btn" id="b-rwind" hidden><svg><use href="#i-wind"/></svg><span data-t="windAd"></span></button>
         <button class="btn" id="b-retry"><svg><use href="#i-restart"/></svg><span data-t="retry"></span></button>
         <button class="btn primary" id="b-next"><svg><use href="#i-play"/></svg><span id="b-next-t"></span></button>
       </div>
@@ -3795,7 +3796,7 @@ const I18N = {
     howto: 'Dümen yok: brülörle ısıt ve yüksel, supapla soğut ve alçal. Her yükseklikte rüzgâr başka yöne eser; gitmek istediğin yöne esen katmanı seç. Üst katmanları görmek için B ile pilot balonu bırak. Zarf gecikmeli tepki verir, propan sınırlı.',
     howtoTouch: 'Dümen yok: brülörle ısıt ve yüksel, supapla soğut ve alçal. Her yükseklikte rüzgâr başka yöne eser; gitmek istediğin yöne esen katmanı seç. Üst katmanları görmek için Pibal düğmesiyle pilot balonu bırak. Zarf gecikmeli tepki verir, propan sınırlı.',
     takeoff: 'Kalkış', mainMenu: 'Ana Menü', paused: 'Duraklatıldı', resume: 'Devam', restartFlight: 'Uçuşu Baştan Al', master: 'Ana ses', music: 'Müzik',
-    effects: 'Efektler', language: 'Dil', quality: 'Kalite', low: 'Düşük', high: 'Yüksek', fullscreen: 'Tam ekran', back: 'Geri', retry: 'Tekrar',
+    effects: 'Efektler', language: 'Dil', quality: 'Kalite', low: 'Düşük', high: 'Yüksek', fullscreen: 'Tam ekran', back: 'Geri', retry: 'Tekrar', windAd: 'Reklam izle: rüzgârlar açık tekrar uç',
     nextFlight: 'Sonraki Uçuş', finale: 'Final', goals: 'Hedefler', fuel: 'Yakıt', windLayers: 'Rüzgâr', alt: 'İrtifa', vario: 'Varyo', envTemp: 'Zarf',
     photo: 'Foto', vent: 'Supap', burner: 'Brülör', camBtn: 'Kamera (C)', speedBtn: 'Oyun hızı', pause: 'Duraklat (P)', sound: 'Ses',
     cam_chase: 'Takip', cam_basket: 'Sepet', cam_map: 'Harita', flight: 'Uçuş',
@@ -3848,7 +3849,7 @@ const I18N = {
     howto: 'There is no steering: heat with the burner to climb, open the vent to descend. The wind blows a different way at every height, so pick the layer that goes where you want. Press B to send up a pilot balloon that reveals the upper layers. The envelope reacts with a lag and propane is limited.',
     howtoTouch: 'There is no steering: heat with the burner to climb, open the vent to descend. The wind blows a different way at every height, so pick the layer that goes where you want. Tap Pibal to send up a pilot balloon that reveals the upper layers. The envelope reacts with a lag and propane is limited.',
     takeoff: 'Take off', mainMenu: 'Main Menu', paused: 'Paused', resume: 'Resume', restartFlight: 'Restart Flight', master: 'Master', music: 'Music',
-    effects: 'Effects', language: 'Language', quality: 'Quality', low: 'Low', high: 'High', fullscreen: 'Fullscreen', back: 'Back', retry: 'Retry',
+    effects: 'Effects', language: 'Language', quality: 'Quality', low: 'Low', high: 'High', fullscreen: 'Fullscreen', back: 'Back', retry: 'Retry', windAd: 'Watch an ad: retry with all winds shown',
     nextFlight: 'Next Flight', finale: 'Finale', goals: 'Goals', fuel: 'Fuel', windLayers: 'Wind', alt: 'Altitude', vario: 'Vario', envTemp: 'Envelope',
     photo: 'Photo', vent: 'Vent', burner: 'Burner', camBtn: 'Camera (C)', speedBtn: 'Game speed', pause: 'Pause (P)', sound: 'Sound',
     cam_chase: 'Chase', cam_basket: 'Basket', cam_map: 'Map', flight: 'Flight',
@@ -4954,6 +4955,9 @@ function showResult() {
   const last = G.idx === NF - 1;
   $('b-next').hidden = !!G.daily || (!r.ok && !PROG.done[G.idx]);
   $('b-next-t').textContent = last ? t('finale') : t('nextFlight');
+  // portal only: the rewarded offer takes the place of the filler "did you know" box (never a new notebook card), so the
+  // card does not grow on small phones
+  const windAd = canWindAd(); $('b-rwind').hidden = !windAd; if (windAd && !nid) $('r-fact').hidden = true;
   if (!FLAG.auto) ($('b-next').hidden ? $('b-retry') : $('b-next')).focus();
   if (window.Arena && Arena.complete) Arena.complete({ mount: $('ov-result').querySelector('.panel') });   // arena-kit v1.1: kapadokya-balonu/complete + one-tap 👍/👎 (nothing on ?auto)
 }
@@ -4964,6 +4968,34 @@ function nextFlight() {
   if (G.idx >= NF - 1) { openEnd(); return; }
   const n = G.idx + 1;
   if (unlocked(n)) startFlight(n); else openMap();
+}
+// Portal ad hooks (G-050). Ads only at the natural break: after a flight, when the player leaves the result card
+// (next flight, retry, region map). On the game's own site (no portal SDK) afterBreak() runs the action synchronously,
+// exactly as before; the ?auto bot moves on with nextFlight() / startFlight() directly and is not affected. One tap = one action.
+let breakBusy = false;
+function afterBreak(f) {
+  if (!(window.Arena && Arena.portal && Arena.portal.name !== 'none')) return f(); // own site: synchronous, as before
+  if (breakBusy) return; breakBusy = true;
+  Arena.portal.midgame().catch(() => false).then(() => { breakBusy = false; if (G.screen === 'result') f(); });
+}
+// Rewarded "wind table": only where the portal can reward, after a failed flight whose upper layers start hidden
+// (flights 3-12, not the Daily Flight), once per flight per session. The flight restarts with every layer revealed, like flights 1-2 (the
+// pibal shows the same thing in play); scoring is unchanged and the result counts once, like any retry.
+const windAdUsed = new Set();
+function canWindAd() {
+  return !!(window.Arena && Arena.portal && Arena.portal.canReward) && !FLAG.auto && !G.daily && !!G.F && hiddenLayers()
+    && !!G.result && !G.result.ok && !windAdUsed.has(G.idx);
+}
+function windAdRetry() {
+  if (G.screen !== 'result' || !canWindAd() || breakBusy) return;
+  breakBusy = true;
+  Arena.portal.rewarded().catch(() => false).then((ok) => {
+    breakBusy = false;
+    if (!ok || G.screen !== 'result') return;
+    windAdUsed.add(G.idx);
+    restartFlight();
+    REVEAL.fill(true);
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -5459,7 +5491,7 @@ addEventListener('keydown', e => {
   if (k === 'm' || k === 'M') { SET.musicOn = !SET.musicOn; saveSettings(); auVolumes(); toast(t(SET.musicOn ? 'musicOn' : 'musicOff'), 'info'); return; }
   if (k === 'x' || k === 'X') { SET.sfxOn = !SET.sfxOn; saveSettings(); auVolumes(); toast(t(SET.sfxOn ? 'sfxOn' : 'sfxOff'), 'info'); return; }
   if (k === 'l' || k === 'L') { setLang(SET.lang === 'tr' ? 'en' : 'tr'); return; }
-  if (G.screen === 'result' && (k === 'Enter' || k === 'n' || k === 'N') && tag !== 'BUTTON') { e.preventDefault(); if (!$('b-next').hidden) nextFlight(); return; }
+  if (G.screen === 'result' && (k === 'Enter' || k === 'n' || k === 'N') && tag !== 'BUTTON') { e.preventDefault(); if (!$('b-next').hidden) afterBreak(nextFlight); return; }
   if (G.screen !== 'play' || overlayOpen() || G.paused) return;
   if (k === ' ' && tag !== 'BUTTON') { e.preventDefault(); G.keys.burn = true; return; }
   if (k === 'v' || k === 'V') { G.keys.vent = true; return; }
@@ -5908,9 +5940,10 @@ $('b-mapback').addEventListener('click', toTitle);
 $('b-start').addEventListener('click', () => { audioInit(); sfx.click(); if (unlocked(G.sel)) startFlight(G.sel); });
 $('b-emenu').addEventListener('click', toTitle);
 $('b-again').addEventListener('click', () => openMap());
-$('b-next').addEventListener('click', () => { sfx.click(); nextFlight(); });
-$('b-retry').addEventListener('click', () => { sfx.click(); restartFlight(); });
-$('b-rmap').addEventListener('click', () => { sfx.click(); openMap(); });
+$('b-next').addEventListener('click', () => { sfx.click(); afterBreak(nextFlight); });
+$('b-retry').addEventListener('click', () => { sfx.click(); afterBreak(restartFlight); });
+$('b-rmap').addEventListener('click', () => { sfx.click(); afterBreak(openMap); });
+$('b-rwind').addEventListener('click', () => { sfx.click(); windAdRetry(); });
 $('b-cam').addEventListener('click', () => { audioInit(); cycleCam(); });
 $('c-view').addEventListener('click', () => { audioInit(); cycleCam(); });
 $('c-photo').addEventListener('click', () => { audioInit(); doPhoto(); });
