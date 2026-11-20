@@ -35,6 +35,13 @@
 - **Dawn mass launch & Valley Notebook:** Watch 12 balloons inflate and lift off in the first 40 seconds over canyon walls textured with 5 banded tuff strata; unlock 6 historical research cards about Cappadocia on your polaroids and landing reports, alongside date-seeded Daily Flights.
 - **Ultra-lean web performance:** A single self-contained `index.html` running Three.js r170 delivering 60 fps at 29–35 draw calls on Intel UHD 620 (36k terrain triangles), verified by an automated `?auto` bot completing 12/12 flights and 36/36 stars.
 
+## What's new in v2.1 (November 2026)
+
+- **Pilot Log** (`Pilot Karnesi`): best score, shortest time and fuel left for all 12 flights, plus 10 achievements worked out from your saved progress. Local only.
+- Version tag and a *What's new* window in the main menu, a link to the other games.
+- Phone fix: the top-bar stars no longer run off narrow screens. Page: Turkish description, share card for Twitter/X, icon, theme colour, 404 page.
+- Details in [CHANGELOG.md](CHANGELOG.md) (Turkish). Smoke test: `node tools/duman.mjs [dir]`.
+
 ## How to play
 
 > [!TIP]
