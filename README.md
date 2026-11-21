@@ -22,10 +22,26 @@
 <!-- portals:end -->
 
 <p align="center">
+  <strong>Direksiyon yok, sadece ateş! Havayı sal, yavaşça alçal; her katta başka yel. Türkçe kolay mı? Oyunda daha kolay.</strong>
+</p>
+
+<p align="center">
+  <strong>Turkish is easy… UP HERE? The game song asks the question; the game gives you the answer.</strong>
+</p>
+
+<p align="center">
+  Kapadokya Balonu: gün doğarken Kapadokya üzerinde 3B sıcak hava balonu rüzgâr bulmacası. Yana dümen yok; yalnız yükselmek için ateşlersin ya da alçalmak için havayı salarsın, rüzgâr her yükseklikte başka yöne eser, gitmek istediğin yöne esen katmanı seç.
+</p>
+
+<p align="center">
   <strong>A 3D hot-air balloon wind puzzle over Cappadocia at sunrise: you never steer sideways, you only burn to climb or vent to sink, and the wind blows a different way at every height, so to go somewhere you pick the layer that blows there.</strong>
 </p>
 
 <!-- gameplay gif -->
+
+## Şarkı videosu / Song video
+
+**Kapadokya Balonu · Oyun Şarkısı**: oyunun tanıtım şarkısı videosu, paylaşım videoları deposunda: [social-videos / 2026-11](https://github.com/Furkiozknn/social-videos/blob/master/2026-11/2026-11-21-kapadokya-balonu-telefon.mp4). Videonun görsel stil notları: [docs/STIL.md](docs/STIL.md).
 
 ## Features
 
