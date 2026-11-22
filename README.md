@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://furkiozknn.github.io/kapadokya-balonu/">
-    <img src="docs/card.jpg" width="100%" alt="Kapadokya Balonu: a 3D hot-air balloon wind puzzle over the fairy chimneys of Cappadocia at sunrise. Click to play in your browser.">
+    <img src="docs/card-3d.jpg" width="100%" alt="Kapadokya Balonu: a 3D hot-air balloon wind puzzle over the fairy chimneys of Cappadocia at sunrise. Click to play in your browser.">
   </a>
 </p>
 
@@ -29,11 +29,20 @@
 
 ## Features
 
+<p align="center">
+  <img src="docs/features.jpg" width="100%" alt="Promo card listing the features of Kapadokya Balonu: wind layers instead of a rudder, 12 flights across 3 regions with up to 36 stars, pilot balloons that reveal hidden winds, a dawn mass launch with 6 notebook cards, and a single-file 60 fps build. A chibi tourist and a balloon pilot ride a striped balloon at sunrise.">
+</p>
+
+<details>
+<summary><b>Feature details</b></summary>
+
 - **Wind layers instead of a rudder:** Each flight has its own wind table of 4 altitude-stacked layers blowing in different directions; with realistic thermal lag (+8.5 °C/s burner heating, 3.5 s lift delay), you navigate entirely by reading the wind ladder and riding the current that carries you toward your goal.
 - **12 flights across 3 regions:** Tour Göreme, Uçhisar, and canyon valleys across 12 flights tackling 5 goal types—low pass below 25 m, marker drops within 15 m of the cross, aerial photos within 20 m of target altitude, hilltop passenger pickups, and precision landings—earning up to 36 stars.
 - **Reading the wind & gust telegraph:** From flight 3 onward, upper wind layers remain unknown (`?`) until sampled; launch a pilot balloon climbing ~4 m/s (15 s cooldown) to map currents, watch launchfield windsocks, and heed the low rumble 1–2 s before a heavy gust hits.
 - **Dawn mass launch & Valley Notebook:** Watch 12 balloons inflate and lift off in the first 40 seconds over canyon walls textured with 5 banded tuff strata; unlock 6 historical research cards about Cappadocia on your polaroids and landing reports, alongside date-seeded Daily Flights.
 - **Ultra-lean web performance:** A single self-contained `index.html` running Three.js r170 delivering 60 fps at 29–35 draw calls on Intel UHD 620 (36k terrain triangles), verified by an automated `?auto` bot completing 12/12 flights and 36/36 stars.
+
+</details>
 
 ## What's new in v2.1 (November 2026)
 
@@ -44,6 +53,13 @@
 
 ## How to play
 
+<p align="center">
+  <img src="docs/how-to-play.jpg" width="100%" alt="How to play Kapadokya Balonu: burn to lift, read the wind ladder and vent into the green layer, complete goals, then land softly on the white cross. A keyboard controls panel and a dotted descent path to the landing field are shown beside the two balloon characters.">
+</p>
+
+<details>
+<summary><b>Goal and steps</b></summary>
+
 > [!TIP]
 > **Goal:** Complete all flight goals and land softly on the trailer field (the white cross with orange flags and light beam). Hold the burner to climb, vent to sink, and ride the wind layer that blows toward your target.
 
@@ -52,6 +68,8 @@
 3. **Complete goals & touch down:** Take photos (`F`), drop markers (`D`), pick up passengers on hilltops, then make a soft touchdown on the trailer field to record your score and stars.
 
 Goals can be completed in any order. Touching the ground anywhere other than the trailer bumps the basket; brushing treetops or fairy chimneys inflicts damage and frightens passengers. Drifting out of the valley, wrecking the basket, or running out of propane away from the field fails the flight. Flights 1 and 2 feature an optional four-step coach strip that guides your first takeoff.
+
+</details>
 
 <details>
 <summary><b>Goals and stars</b></summary>
