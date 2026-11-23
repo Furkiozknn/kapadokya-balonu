@@ -1740,6 +1740,61 @@ a.btn { text-decoration: none; }
 @media (max-width: 480px) { .ktable { font-size: 12px; } .ktable th, .ktable td { padding: 4px 3px; } .ach { grid-template-columns: 1fr; } }
 /* telefon: üst çubuktaki yıldızlar dar ekranda taşmasın */
 @media (max-width: 480px) { .stats { gap: 4px; } .stats > div { padding: 3px 5px; } .stats > div > span[data-t="fuel"] { display: none; } }
+
+/* ==========================================================================
+   stil-3d (23.11.2026): the song video's warm 3D chibi world. Soft sunrise panels, rounded clay buttons,
+   the video's pilot and tourist on the cards (assets/3d).
+   ========================================================================== */
+:root {
+  --panel-bg: rgba(74, 38, 52, 0.86);
+  --panel-bg-dense: rgba(46, 22, 36, 0.94);
+  --panel-edge: rgba(255, 196, 150, 0.34);
+  --panel-sheen: rgba(255, 232, 210, 0.22);
+  --panel-shadow: 0 18px 40px -6px rgba(40, 12, 24, 0.55), 0 6px 14px rgba(60, 20, 30, 0.28);
+}
+.glass {
+  background:
+    radial-gradient(130% 90% at 50% 0%, rgba(255, 178, 120, 0.20) 0%, transparent 60%),
+    linear-gradient(175deg, var(--panel-bg), var(--panel-bg-dense));
+  border-radius: 18px;
+}
+.panel.glass { border-radius: 22px; outline-color: rgba(255, 200, 150, 0.16); }
+.btn {
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255, 236, 214, 0.16), rgba(255, 220, 190, 0.06));
+  box-shadow: inset 0 1px 0 rgba(255, 245, 230, 0.22), 0 3px 0 rgba(30, 8, 18, 0.35), 0 6px 12px rgba(30, 8, 18, 0.22);
+}
+.btn:active { transform: translateY(2px); box-shadow: inset 0 1px 0 rgba(255, 245, 230, 0.2), 0 1px 0 rgba(30, 8, 18, 0.35); }
+.btn.primary, .btn.primary:hover {
+  background: linear-gradient(180deg, #FF9A45 0%, #F2731C 55%, #D9561A 100%);
+  border-color: #FFD9A8;
+  box-shadow: inset 0 2px 0 rgba(255, 240, 210, 0.55), inset 0 -3px 0 rgba(150, 50, 10, 0.35), 0 4px 0 #9A3A12, 0 8px 18px rgba(200, 80, 30, 0.38);
+  text-shadow: 0 1px 2px rgba(120, 40, 10, 0.55);
+}
+.btn.primary:hover { filter: brightness(1.06); }
+.cbtn, .ibtn { border-radius: 16px; }
+.burn:not(.on):not(:hover) { background: radial-gradient(circle at 50% 30%, #FFB25C, #F2731C 55%, #C94A14); box-shadow: inset 0 3px 0 rgba(255, 240, 210, 0.5), 0 5px 0 #8f3510, 0 10px 18px rgba(200, 80, 30, 0.4); }
+.brand .brand-face { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #FFD9A8; box-shadow: 0 2px 8px rgba(40, 10, 20, 0.5); background: #f2b48a; }
+/* title: the video's pilot and tourist in their basket, with the striped balloon badge */
+.title .hero { position: relative; height: 132px; margin: -6px -8px 10px; border-radius: 18px; overflow: hidden; box-shadow: inset 0 0 0 2px rgba(255, 210, 160, 0.35), 0 6px 16px rgba(30, 8, 18, 0.35); background: linear-gradient(180deg, #f7b98e, #c98a7a); }
+.title .hero-img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 33%; display: block; }
+.title .hero-logo { position: absolute; left: 10px; bottom: 8px; width: 58px; height: 58px; border-radius: 50%; border: 3px solid #FFE7C8; box-shadow: 0 4px 10px rgba(40, 10, 20, 0.45); }
+/* small pilot face next to each card title (inline, never on top of text) */
+.panel h2:not(.serif)::before {
+  content: ''; display: inline-block; width: 28px; height: 28px; margin: -6px 9px -4px 0; vertical-align: middle;
+  border-radius: 50%; border: 2px solid #FFD9A8; background: #f2b48a url(assets/3d/pilot_yuz.webp) center / cover; box-shadow: 0 2px 6px rgba(30, 8, 18, 0.45);
+}
+/* landing report: the chibi pilot (soft landing) or tourist (bump) peeks out of the wicker basket rim */
+.mascot { width: 128px; height: 98px; top: -88px; }
+.mascot img { left: 50%; top: 6px; width: auto; height: 172px; margin-left: -64px; width: 128px; object-fit: contain; object-position: 50% 0; }
+.mascot .rim { height: 24px; border-radius: 10px 10px 4px 4px; }
+@media (max-height: 800px) {
+  .title .hero { height: 92px; margin-bottom: 6px; }
+  .title .hero-logo { width: 44px; height: 44px; }
+}
+@media (max-height: 700px) { .title .hero { height: 70px; } .title .hero-logo { display: none; } }
+@media (max-width: 760px) and (min-height: 701px) { .title .hero { height: 104px; } .title .hero-logo { width: 46px; height: 46px; } }
+@media (max-width: 760px) and (min-height: 701px) and (max-height: 800px) { .title .hero { height: 76px; } .title .hero-logo { display: none; } }
 </style>
 <script>/*ARENA-KIT:BEGIN v1.3.2 sha256:ce77e23fab7c*/
 /* ARENA-KIT v1 — shared layer for the 21 Claude Game Arena games.
@@ -2939,7 +2994,7 @@ window.ArenaCore = { version: VERSION, kalite, render, kabuk, his, kamera, test,
 
 <div id="ui">
   <div class="topbar glass" id="hud" hidden>
-    <div class="brand serif"><svg width="32" height="32"><use href="#i-logo"/></svg><span>Kapadokya Balonu</span></div>
+    <div class="brand serif"><img class="brand-face" src="assets/3d/pilot_yuz.webp" width="36" height="36" alt="" onerror="this.style.visibility='hidden'"><span>Kapadokya Balonu</span></div>
     <div class="stats">
       <div><span id="s-reg">Göreme</span> <b id="s-flight">1/4</b></div>
       <div><span data-t="goals">Hedefler</span> <span class="chips" id="s-goals"></span></div>
@@ -3002,7 +3057,7 @@ window.ArenaCore = { version: VERSION, kalite, render, kabuk, his, kamera, test,
   <!-- Title -->
   <div class="overlay clear" id="ov-title">
     <div class="panel glass title">
-      <svg class="logo"><use href="#i-logo"/></svg>
+      <div class="hero"><img class="hero-img" src="assets/3d/kapak.webp" width="640" height="450" alt="" onerror="this.remove()"><img class="hero-logo" src="assets/3d/logo.webp" width="96" height="96" alt="" onerror="this.remove()"></div>
       <h1 class="serif">Kapadokya Balonu</h1>
       <p class="sub" data-t="subtitle"></p>
       <p class="how" data-t="howto"></p>
@@ -3776,13 +3831,14 @@ const ARENA = window.Arena && window.Arena.version ? window.Arena : null;
 const ARENA_ID = 'kapadokya-balonu', GAME_URL = 'https://furkiozknn.github.io/kapadokya-balonu/';
 // The world, textures and sounds are generated in code. The only files are the two mascot PNGs on the landing
 // report; they load after the first frame and ?noassets skips them.
-const ASSETS = { used: !FLAG.noassets, loaded: [], failed: [], skipped: FLAG.noassets, note: 'procedural world; mascot PNGs only' };
-// Mascot (white Turkish Van kitten) for the landing report; loaded after the first frame, missing files are fine
+const ASSETS = { used: !FLAG.noassets, loaded: [], failed: [], skipped: FLAG.noassets, note: 'procedural world dressed in the song video\'s 3D chibi style: character sprites and painted sky from assets/3d' };
+// Landing report figure: the video's chibi pilot waves after a soft landing, the tourist pops up after a hard bump or
+// a failed flight; loaded after the first frame, missing files are fine
 const MASCOT = {};
 function loadMascot() {
   if (FLAG.noassets) return;
-  for (const [k, f] of [['wave', 'kedi-selam'], ['puff', 'kedi-saskin']]) {
-    const im = new Image(), url = `assets/mascot/${f}.png`;
+  for (const [k, f] of [['wave', 'pilot'], ['puff', 'turist']]) {
+    const im = new Image(), url = `assets/3d/${f}.webp`;
     im.onload = () => { MASCOT[k] = im; ASSETS.loaded.push(url); };
     im.onerror = () => { ASSETS.failed.push(url); };
     im.src = url;
@@ -3984,6 +4040,29 @@ const GOAL_ICON = { low: 'i-low', drop: 'i-drop', photo: 'i-cam', pickup: 'i-pax
 // ---------------------------------------------------------------------------
 // Renderer, scene, sky, light
 // ---------------------------------------------------------------------------
+// stil-3d: the song video's chibi characters and painted sky (assets/3d/*.webp). Sprites stay hidden until their
+// texture arrives; the old code-drawn shapes stay as the fallback (?noassets, missing file).
+const ART = { tex: {}, on: !FLAG.noassets };
+const texLoader = new THREE.TextureLoader();
+function artTex(name, cb) {
+  if (!ART.on) return null;
+  let e = ART.tex[name];
+  if (!e) {
+    const url = `assets/3d/${name}.webp`;
+    e = ART.tex[name] = { ok: false, cbs: [] };
+    e.t = texLoader.load(url, () => { e.ok = true; ASSETS.loaded.push(url); e.cbs.forEach(f => f(e.t)); e.cbs = []; }, undefined, () => ASSETS.failed.push(url));
+    e.t.colorSpace = THREE.SRGBColorSpace;
+  }
+  if (cb) { if (e.ok) cb(e.t); else e.cbs.push(cb); }
+  return e.t;
+}
+const ART_ASPECT = { pilot: 147 / 360, turist: 265 / 360, yolcu1: 151 / 360, yolcu2: 208 / 360, yolcu3: 184 / 360, yolcu4: 180 / 360, yolcu5: 192 / 360, yolcu6: 297 / 360 };
+function chibi(name, h, onShow) {
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ alphaTest: 0.45, color: 0xfff3ea }));
+  sp.scale.set(h * ART_ASPECT[name], h, 1); sp.center.set(0.5, 0); sp.visible = false;
+  artTex(name, tx => { sp.material.map = tx; sp.material.needsUpdate = true; sp.visible = true; if (onShow) onShow(); });
+  return sp;
+}
 const canvas = $('c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, SET.quality === 'low' ? 1 : 1.5));
@@ -4010,17 +4089,27 @@ const SKY = {
   fog: { top: 0x8f8aa8, mid: 0xd8b8b4, hor: 0xf0d8c8, sun: 0xffd6b0, sunI: 1.4, hemi: 0xd6c8d2, hemiG: 0x8a7060, hemiI: 1.4, el: 12 },
 };
 const skyMat = new THREE.ShaderMaterial({
-  uniforms: { top: { value: new THREE.Color() }, mid: { value: new THREE.Color() }, hor: { value: new THREE.Color() }, sunC: { value: new THREE.Color() }, sunDir: { value: new THREE.Vector3(0, 0.1, -1) } },
+  uniforms: { top: { value: new THREE.Color() }, mid: { value: new THREE.Color() }, hor: { value: new THREE.Color() }, sunC: { value: new THREE.Color() }, sunDir: { value: new THREE.Vector3(0, 0.1, -1) },
+    paint: { value: null }, paintK: { value: 0 } },
   vertexShader: 'varying vec3 vD; void main(){ vD = position; vec4 p = projectionMatrix * modelViewMatrix * vec4(position, 1.0); gl_Position = p.xyww; }',
-  fragmentShader: `uniform vec3 top; uniform vec3 mid; uniform vec3 hor; uniform vec3 sunC; uniform vec3 sunDir; varying vec3 vD;
+  // stil-3d: the painted sunrise band (assets/3d/gok.webp: clay clouds and distant balloons) wraps the lower sky,
+  // mirrored 4x around the horizon and tinted by the current sky so noon and fog still read
+  fragmentShader: `uniform vec3 top; uniform vec3 mid; uniform vec3 hor; uniform vec3 sunC; uniform vec3 sunDir; uniform sampler2D paint; uniform float paintK; varying vec3 vD;
     void main(){ vec3 d = normalize(vD); float h = d.y;
       vec3 c = mix(hor, mid, smoothstep(0.0, 0.2, h)); c = mix(c, top, smoothstep(0.18, 0.75, h)); if (h < 0.0) c = mix(hor, hor * 0.82, smoothstep(0.0, -0.25, h));
+      if (paintK > 0.0) {
+        float w = paintK * smoothstep(-0.03, 0.03, h) * (1.0 - smoothstep(0.36, 0.56, h));
+        vec3 pc = texture2D(paint, vec2(atan(d.z, d.x) * 0.63662, clamp(h / 0.56, 0.0, 1.0) * 0.98 + 0.01)).rgb;
+        pc = pc * mix(vec3(1.0), c / vec3(0.86, 0.66, 0.66), 0.55);
+        c = mix(c, pc, w);
+      }
       float s = max(dot(d, normalize(sunDir)), 0.0); c += sunC * (pow(s, 900.0) * 4.0 + pow(s, 14.0) * 0.32 + pow(s, 3.0) * 0.1);
       gl_FragColor = vec4(c, 1.0);
       #include <colorspace_fragment>
     }`,
   side: THREE.BackSide, depthWrite: false, fog: false,
 });
+artTex('gok', tx => { tx.wrapS = THREE.MirroredRepeatWrapping; tx.wrapT = THREE.ClampToEdgeWrapping; tx.needsUpdate = true; skyMat.uniforms.paint.value = tx; skyMat.uniforms.paintK.value = 0.82; });
 const sky = new THREE.Mesh(new THREE.SphereGeometry(4000, 24, 12), skyMat);
 sky.renderOrder = -10; sky.frustumCulled = false;
 scene.add(sky);
@@ -4059,6 +4148,16 @@ function prep(geo, col) {
   for (let i = 0; i < n; i++) { c[i * 3] = cc.r; c[i * 3 + 1] = cc.g; c[i * 3 + 2] = cc.b; }
   g.setAttribute('color', new THREE.BufferAttribute(c, 3));
   g.computeVertexNormals();
+  return g;
+}
+// like prep() but keeps the geometry's own smooth normals (soft clay look instead of flat facets)
+function prepS(geo, col) {
+  const g = geo.index ? geo.toNonIndexed() : geo;
+  if (g.attributes.uv) g.deleteAttribute('uv');
+  if (!g.attributes.normal) g.computeVertexNormals();
+  const n = g.attributes.position.count, c = new Float32Array(n * 3), cc = new THREE.Color(col);
+  for (let i = 0; i < n; i++) { c[i * 3] = cc.r; c[i * 3 + 1] = cc.g; c[i * 3 + 2] = cc.b; }
+  g.setAttribute('color', new THREE.BufferAttribute(c, 3));
   return g;
 }
 function place(g, x, y, z, ry = 0, sx = 1, sy = 1, sz = 1) { g.scale(sx, sy, sz); if (ry) g.rotateY(ry); g.translate(x, y, z); return g; }
@@ -4127,18 +4226,37 @@ function buildTerrain() {
     TW[k + 1] = sstep(9, 22, h - lo) * (1 - sstep(2, 7, hi - h)) * (1 - TW[k] * 0.6);
   }
   const tw = new Float32Array(NX * NZ * 12);
-  let q = 0;
+  // stil-3d: soft clay terrain. Triangle colours are blended with the average colour of each grid vertex, and normals
+  // come from the height field (smooth shading) instead of flat low-poly facets.
+  const NV = N1 * (NZ + 1), vSum = new Float32Array(NV * 4), triC = [];
+  for (let j = 0; j < NZ; j++) for (let i = 0; i < NX; i++) {
+    const a = vx(i, j), b = vx(i + 1, j), c = vx(i, j + 1), d = vx(i + 1, j + 1);
+    const va = j * N1 + i, vb = va + 1, vc = va + N1, vd = vc + 1;
+    for (const [tri, vs] of [[[a, c, b], [va, vc, vb]], [[b, c, d], [vb, vc, vd]]]) {
+      const cc = triColor(...tri); triC.push(cc);
+      for (const v of vs) { vSum[v * 4] += cc[0]; vSum[v * 4 + 1] += cc[1]; vSum[v * 4 + 2] += cc[2]; vSum[v * 4 + 3]++; }
+    }
+  }
+  const nrm = new Float32Array(NX * NZ * 18);
+  let q = 0, t = 0;
   for (let j = 0; j < NZ; j++) for (let i = 0; i < NX; i++) {
     const a = vx(i, j), b = vx(i + 1, j), c = vx(i, j + 1), d = vx(i + 1, j + 1);
     const ka = (j * N1 + i) * 2, kb = ka + 2, kc = ka + N1 * 2, kd = kc + 2;
     for (const [tri, ks] of [[[a, c, b], [ka, kc, kb]], [[b, c, d], [kb, kc, kd]]]) {
-      const cc = triColor(...tri);
-      for (const v of tri) { pos[p] = v[0]; pos[p + 1] = v[1]; pos[p + 2] = v[2]; col[p] = cc[0]; col[p + 1] = cc[1]; col[p + 2] = cc[2]; p += 3; }
+      const cc = triC[t++];
+      for (let k = 0; k < 3; k++) {
+        const v = tri[k], gi = ks[k] / 2, gx = gi % N1, gz = (gi / N1) | 0, w = 1 / vSum[gi * 4 + 3];
+        pos[p] = v[0]; pos[p + 1] = v[1]; pos[p + 2] = v[2];
+        for (let e = 0; e < 3; e++) col[p + e] = cc[e] * 0.3 + vSum[gi * 4 + e] * w * 0.7;
+        const nx = Hg(gx - 1, gz) - Hg(gx + 1, gz), nz = Hg(gx, gz - 1) - Hg(gx, gz + 1), ny = 2 * cs, nl = Math.hypot(nx, ny, nz);
+        nrm[p] = nx / nl; nrm[p + 1] = ny / nl; nrm[p + 2] = nz / nl;
+        p += 3;
+      }
       for (const kk of ks) { tw[q++] = TW[kk]; tw[q++] = TW[kk + 1]; }
     }
   }
   const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.setAttribute('tuff', new THREE.BufferAttribute(tw, 2)); g.computeVertexNormals();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.setAttribute('tuff', new THREE.BufferAttribute(tw, 2)); g.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
   const tmat = new THREE.MeshLambertMaterial({ vertexColors: true });
   // 7 tuff strata tones in ~5.4 m wavy bands on steep walls, pale pumice seams/rim cap, plus slow drifting cloud
   // shadows on terrain (one shared cloudTex + one vec3 uniform uCloudVec; skipped when ?low / quality === 'low')
@@ -4208,13 +4326,15 @@ function buildChimneys() {
     [[0.22, 0], [0.96, 0.14], [0.94, 0.60], [0.68, 0.86], [0.25, 0.97], [0, 1]],
   ];
   const M = new THREE.Matrix4(), q = new THREE.Quaternion(), qT = new THREE.Quaternion(), s = new THREE.Vector3(), p = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0), tiltAx = new THREE.Vector3(1, 0, 0);
-  const tones = [0xf0c9a0, 0xe7b48a, 0xdba57c, 0xf3d7b6, 0xd99c7a, 0xe3a892, 0xead2b4, 0xcf8e6e];
-  const capTones = [0x4c3a30, 0x5e4536, 0x3f322b, 0x684b3b, 0x533e35];
+  // stil-3d: the video's soft peach-pink clay chimneys (smooth shading, rounder lathe, warm brown caps)
+  const tones = [0xf4c6ac, 0xeeb79e, 0xe6a98f, 0xf7d6c0, 0xe8a48e, 0xf0b8a8, 0xf3d0bc, 0xdf9c84];
+  const capTones = [0x8a5a48, 0x9a6650, 0x7c5244, 0xa47058, 0x8e5e4e];
   const mat = new THREE.MeshLambertMaterial({ vertexColors: true });
   const groups = bShapes.map(() => []);
   C.CH.forEach((c, i) => groups[i % groups.length].push(c));
+  const seg = low ? 8 : 16;
   groups.forEach((list, gi) => {
-    const bodyG = prep(latheNI(bShapes[gi], 7), 0xffffff);
+    const bodyG = prepS(latheNI(bShapes[gi], seg), 0xffffff);
     const pa = bodyG.attributes.position, ca = bodyG.attributes.color;
     for (let i = 0; i < pa.count; i += 3) {
       const y = (pa.getY(i) + pa.getY(i + 1) + pa.getY(i + 2)) / 3;
@@ -4222,7 +4342,7 @@ function buildChimneys() {
       const w = Math.sin(y * 9 + gi * 1.7);
       for (let v = 0; v < 3; v++) ca.setXYZ(i + v, k * (1 + 0.03 * w), k * (0.96 + 0.03 * Math.sin(y * 7)), k * (0.94 - 0.03 * w));
     }
-    const capG = prep(latheNI(cShapes[gi], 7), 0xffffff);
+    const capG = prepS(latheNI(cShapes[gi], seg), 0xffffff);
     const body = new THREE.InstancedMesh(bodyG, mat, list.length);
     const cap = new THREE.InstancedMesh(capG, mat, list.length);
     list.forEach((c, i) => {
@@ -4332,7 +4452,7 @@ function buildTrees() {
     if (P.k === 2) for (let lx = -P.w / 2 + 4; lx < P.w / 2; lx += 8) { const [x, z] = at(lx, (R() - 0.5) * 4); pop.push([x, z, 0.8 + R() * 0.45, R()]); }
   }
   const M = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), p = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
-  const canopy = new THREE.InstancedMesh(prep(new THREE.IcosahedronGeometry(1, 0), 0xffffff), new THREE.MeshLambertMaterial({ vertexColors: true }), apr.length + pop.length);
+  const canopy = new THREE.InstancedMesh(prepS(new THREE.IcosahedronGeometry(1, isLow() ? 0 : 1), 0xffffff) /* stil-3d: round, smooth clay canopies */, new THREE.MeshLambertMaterial({ vertexColors: true }), apr.length + pop.length);
   const trunk = new THREE.InstancedMesh(prep(new THREE.CylinderGeometry(0.22, 0.3, 1, 5).translate(0, 0.5, 0), 0x6b4a32), new THREE.MeshLambertMaterial({ vertexColors: true }), apr.length);
   const greens = [0x7f9b3e, 0x93a548, 0x6f8c3a, 0xa0a64a, 0x8a9a40];
   let i = 0;
@@ -4359,20 +4479,32 @@ function buildTrees() {
 // Balloons: the player and the instanced crowd
 // ---------------------------------------------------------------------------
 const ENV_PTS = [[1.5, 0], [2.3, 1.4], [5.2, 4.6], [8.0, 8.6], [9.3, 12], [9.2, 15.2], [8.1, 18.2], [5.8, 20.6], [2.6, 22], [0, 22.4]];
-const ENV_SEG = 16;
-function envelopeGeo(colA, colB, band) {
-  const g = latheNI(ENV_PTS, ENV_SEG).toNonIndexed(); g.deleteAttribute('uv');
+const ENV_SEG = 16; // gores (8 + 8 stripes, as on the song video's balloon)
+// stil-3d: a rounder, smooth-shaded envelope (spline profile, 32-48 lathe segments, the lathe's own smooth normals)
+const ENV_PROF = new THREE.SplineCurve(ENV_PTS.map(([r, y]) => new THREE.Vector2(r, y))).getPoints(30);
+function envelopeGeo(colA, colB, band, seg = 32) {
+  const g = new THREE.LatheGeometry(ENV_PROF, seg).toNonIndexed(); g.deleteAttribute('uv');
   const pa = g.attributes.position, n = pa.count, col = new Float32Array(n * 3);
-  const A = new THREE.Color(colA), B = new THREE.Color(colB), D = new THREE.Color(band);
+  const A = new THREE.Color(colA), B = new THREE.Color(colB), D = new THREE.Color(band ?? colA);
   for (let i = 0; i < n; i += 3) {
     const x = (pa.getX(i) + pa.getX(i + 1) + pa.getX(i + 2)) / 3, z = (pa.getZ(i) + pa.getZ(i + 1) + pa.getZ(i + 2)) / 3, y = (pa.getY(i) + pa.getY(i + 1) + pa.getY(i + 2)) / 3;
     const gore = Math.floor(((Math.atan2(z, x) + TAU) % TAU) / (TAU / ENV_SEG));
-    let c = gore % 2 ? A : B; if (y > 7.5 && y < 10.5) c = D; if (y > 20.4) c = B;
+    let c = gore % 2 ? A : B; if (band != null && y > 7.5 && y < 10.5) c = D; if (y > 21.2) c = B;
     for (let v = 0; v < 3; v++) col.set([c.r, c.g, c.b], (i + v) * 3);
   }
-  g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.computeVertexNormals();
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
   return g;
 }
+// wicker weave for the baskets (canvas, no file)
+const wickerTex = canvasTex(64, 64, (g, w) => {
+  g.fillStyle = '#9a6234'; g.fillRect(0, 0, w, w);
+  for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+    const hz = (x + y) % 2 === 0, gr = hz ? g.createLinearGradient(0, y * 8, 0, y * 8 + 8) : g.createLinearGradient(x * 8, 0, x * 8 + 8, 0);
+    gr.addColorStop(0, '#7a4524'); gr.addColorStop(0.5, '#c98d52'); gr.addColorStop(1, '#7a4524');
+    g.fillStyle = gr; g.beginPath(); g.roundRect(x * 8 + 0.6, y * 8 + 0.6, 6.8, 6.8, 2.6); g.fill();
+  }
+});
+wickerTex.wrapS = wickerTex.wrapT = THREE.RepeatWrapping; wickerTex.repeat.set(3, 2);
 // Envelope fabric shading: vertical gore & horizontal ring seams, billowed panels, warm sun side and cool shade side (skipped on ?low / Low quality)
 const ENV_UNI = { uSun: { value: SUN_DIR }, uFx: { value: SET.quality === 'low' ? 0 : 1 } };
 function shadeEnvelope(mat) {
@@ -4390,7 +4522,7 @@ function shadeEnvelope(mat) {
         float seam = 1.0 - 0.15 * smoothstep(0.84, 0.98, max(gEdge, hEdge * 0.9));
         float puff = 0.95 + 0.07 * (1.0 - gEdge * gEdge);
         float nl = dot(normalize(vWN), uSun);
-        vec3 fabric = mix(vec3(0.80, 0.86, 0.98), vec3(1.10, 0.97, 0.85), nl * 0.5 + 0.5);
+        vec3 fabric = mix(vec3(0.90, 0.84, 0.86), vec3(1.10, 1.0, 0.90), nl * 0.5 + 0.5); // stil-3d: warm shade side, cream stays cream
         diffuseColor.rgb *= fabric * seam * puff;
       }`);
   };
@@ -4400,13 +4532,25 @@ const PLAYER = {};
 function buildPlayer() {
   const grp = new THREE.Group();
   const envMat = shadeEnvelope(new THREE.MeshLambertMaterial({ vertexColors: true, emissive: 0xff7a20, emissiveIntensity: 0, side: THREE.DoubleSide }));
-  const env = new THREE.Mesh(envelopeGeo(0xE8590C, 0xf8d9a8, 0x8c2d14), envMat); env.position.y = 4.6; env.castShadow = true;
-  const bparts = [prep(new THREE.BoxGeometry(1.7, 1.15, 1.7).translate(0, 0.58, 0), 0x7a4a2a), prep(new THREE.BoxGeometry(1.8, 0.16, 1.8).translate(0, 1.18, 0), 0x4e2e18)];
-  for (const [x, z, c] of [[-0.4, 0.3, 0x3a2a22], [0.4, -0.3, 0x2c2420], [0.35, 0.4, 0x5a3a26]]) bparts.push(prep(new THREE.SphereGeometry(0.24, 6, 4).translate(x, 1.55, z), 0xe8b896), prep(new THREE.BoxGeometry(0.5, 0.45, 0.4).translate(x, 1.2, z), c));
-  bparts.push(prep(new THREE.BoxGeometry(0.9, 0.5, 0.9).translate(0, 3.1, 0), 0x3b3b40));
-  const basket = new THREE.Mesh(mergeGeometries(bparts), new THREE.MeshLambertMaterial({ vertexColors: true })); basket.castShadow = true;
-  const pax = new THREE.Mesh(mergeGeometries([prep(new THREE.SphereGeometry(0.24, 6, 4).translate(-0.4, 1.55, -0.4), 0xe8b896), prep(new THREE.BoxGeometry(0.5, 0.45, 0.4).translate(-0.4, 1.2, -0.4), 0x2a5a7a)]), basket.material);
-  pax.visible = false;
+  // stil-3d: the song video's balloon: bright orange and cream gores, no band, smooth round envelope
+  const env = new THREE.Mesh(envelopeGeo(0xF2731C, 0xFFEFD8, null, 48), envMat); env.position.y = 4.6; env.castShadow = true;
+  // basket: woven wicker box, rounded leather rim, brass burner; the crew are the video's chibi pilot and tourist (sprites)
+  const basket = new THREE.Group();
+  const wick = new THREE.Mesh(new THREE.BoxGeometry(1.7, 1.15, 1.7).translate(0, 0.58, 0), new THREE.MeshLambertMaterial({ map: wickerTex }));
+  const bparts = [prep(new THREE.CylinderGeometry(1.25, 1.25, 0.2, 4, 1).rotateY(Math.PI / 4).translate(0, 1.2, 0), 0x6a3a1e),
+    prep(new THREE.CylinderGeometry(0.34, 0.42, 0.46, 12).translate(0, 3.1, 0), 0xc99a4a), prep(new THREE.TorusGeometry(0.5, 0.06, 6, 16).rotateX(Math.PI / 2).translate(0, 2.86, 0), 0x8a6a3a)];
+  const crewOld = [];
+  for (const [x, z, c] of [[-0.4, 0.3, 0x3a2a22], [0.4, -0.3, 0x2c2420], [0.35, 0.4, 0x5a3a26]]) crewOld.push(prep(new THREE.SphereGeometry(0.24, 6, 4).translate(x, 1.55, z), 0xe8b896), prep(new THREE.BoxGeometry(0.5, 0.45, 0.4).translate(x, 1.2, z), c));
+  const bmat = new THREE.MeshLambertMaterial({ vertexColors: true });
+  const rimM = new THREE.Mesh(mergeGeometries(bparts), bmat), crew = new THREE.Mesh(mergeGeometries(crewOld), bmat);
+  wick.castShadow = rimM.castShadow = crew.castShadow = true;
+  // big-headed chibi proportions: the heads rise well above the rim so the crew reads from the chase camera
+  const pilot = chibi('pilot', 2.85, () => { crew.visible = false; }), tourist = chibi('turist', 2.6);
+  pilot.position.set(-0.5, 0.25, 0.06); tourist.position.set(0.56, 0.25, -0.06);
+  basket.add(wick, rimM, crew, pilot, tourist);
+  const pax = new THREE.Group(), paxOld = new THREE.Mesh(mergeGeometries([prep(new THREE.SphereGeometry(0.24, 6, 4).translate(-0.4, 1.55, -0.4), 0xe8b896), prep(new THREE.BoxGeometry(0.5, 0.45, 0.4).translate(-0.4, 1.2, -0.4), 0x2a5a7a)]), bmat);
+  const paxS = chibi('yolcu4', 1.95, () => { paxOld.visible = false; }); paxS.position.set(0.02, 0.3, -0.5);
+  pax.add(paxOld, paxS); pax.visible = false;
   const rp = []; for (const [x, z] of [[-0.8, -0.8], [0.8, -0.8], [-0.8, 0.8], [0.8, 0.8]]) rp.push(x, 1.2, z, x * 1.6, 4.7, z * 1.6);
   const ropes = new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(rp, 3)), new THREE.LineBasicMaterial({ color: 0x3a2a20 }));
   const flame = new THREE.Sprite(new THREE.SpriteMaterial({ map: flameTex, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, fog: false }));
@@ -4424,25 +4568,32 @@ function buildPeople() {
   const cols = [0x2a5a7a, 0x8a3a2a, 0x3a6a3a, 0xE8590C, 0x6a3a7a, 0xd8b04a, 0x2c2c34, 0xc0392b];
   for (let i = 0; i < PEOPLE.n; i++) body.setColorAt(i, tmpC.setHex(cols[i % cols.length]));
   body.instanceColor.needsUpdate = true; body.castShadow = true; body.visible = head.visible = false;
-  scene.add(body, head); Object.assign(PEOPLE, { body, head });
+  // stil-3d: the group photo is the video's chibi crew; pilot and tourist in the middle of the front row
+  const NAMES = ['yolcu1', 'yolcu5', 'yolcu2', 'yolcu6', 'pilot', 'turist', 'yolcu3', 'yolcu4', 'yolcu1', 'yolcu5', 'yolcu2', 'yolcu6', 'yolcu3', 'yolcu4', 'yolcu2', 'yolcu5'];
+  const sprites = new THREE.Group(); sprites.visible = false; let shown = 0;
+  const list = NAMES.map((nm, i) => { const s = chibi(nm, nm === 'pilot' ? 2.5 : 2.25 - (i % 3) * 0.08, () => { shown++; }); sprites.add(s); return s; });
+  scene.add(body, head, sprites); Object.assign(PEOPLE, { body, head, sprites, list, ready: () => shown === NAMES.length });
 }
 function placePeople(on) {
-  PEOPLE.body.visible = PEOPLE.head.visible = on; if (!on) return;
+  const art = PEOPLE.ready();
+  PEOPLE.sprites.visible = on && art;
+  PEOPLE.body.visible = PEOPLE.head.visible = on && !art; if (!on) return;
   const L = C.REGIONS[0].launch;
   for (let i = 0; i < PEOPLE.n; i++) {
     const row = i < 9 ? 0 : 1, k = row ? i - 9 : i, n = row ? 7 : 9, x = L.x + (k - (n - 1) / 2) * 1.5 + (row ? 0.75 : 0), z = L.z + 16 - row * 1.4;
     const s = 0.95 + ((i * 37) % 10) / 50;
     _q.setFromAxisAngle(_up, (Math.random() - 0.5) * 0.4);
     _M.compose(_p.set(x, ground(x, z), z), _q, _s.set(s, s, s)); PEOPLE.body.setMatrixAt(i, _M); PEOPLE.head.setMatrixAt(i, _M);
+    const sx = L.x + (k - (n - 1) / 2) * 1.85 + (row ? 0.92 : 0); PEOPLE.list[i].position.set(sx, ground(sx, z), z);
   }
   PEOPLE.body.instanceMatrix.needsUpdate = true; PEOPLE.head.instanceMatrix.needsUpdate = true;
 }
 const CROWD_COLS = [0xc0392b, 0x2e6fb7, 0xf2c14e, 0x3a9a5b, 0x8e44ad, 0x16a3a3, 0xd35400, 0xe84393, 0x1f3a93, 0xf39c12, 0x27ae60, 0xb03a5b];
 function buildCrowd() {
   const n = SET.quality === 'low' ? 22 : 36;
-  const eg = envelopeGeo(0xffffff, 0xb8b0a8, 0x6a5a50);
+  const eg = envelopeGeo(0xffffff, 0xfff0dc, null, isLow() ? 16 : 32);
   const env = new THREE.InstancedMesh(eg, shadeEnvelope(new THREE.MeshLambertMaterial({ vertexColors: true })), n);
-  const bas = new THREE.InstancedMesh(prep(new THREE.BoxGeometry(1.6, 1.1, 1.6).translate(0, 0.55, 0), 0x6a4026), new THREE.MeshLambertMaterial({ vertexColors: true }), n);
+  const bas = new THREE.InstancedMesh(new THREE.BoxGeometry(1.6, 1.1, 1.6).translate(0, 0.55, 0), new THREE.MeshLambertMaterial({ map: wickerTex }), n);
   const R = rng(44);
   for (let i = 0; i < n; i++) {
     env.setColorAt(i, tmpC.setHex(CROWD_COLS[i % CROWD_COLS.length]));
