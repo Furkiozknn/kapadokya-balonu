@@ -2412,6 +2412,44 @@ a.btn { text-decoration: none; }
   };
 })(typeof window !== 'undefined' ? window : globalThis);
 /*ARENA-KIT:END*/</script>
+<script>
+/* GL-GUARD: WebGL unavailable / three.js CDN unreachable -> clear TR+EN message instead of a stuck loading screen */
+(function () {
+  var T = {
+    gl: ['WebGL kullanılamıyor. Tarayıcında donanım hızlandırmayı aç ya da başka bir tarayıcı dene.', 'WebGL is unavailable. Enable hardware acceleration in your browser or try another browser.'],
+    net: ['Three.js yüklenemedi. İnternet bağlantını kontrol edip sayfayı yenile.', 'Three.js could not be loaded. Check your connection and reload the page.']
+  };
+  var st = document.createElement('style');
+  st.textContent = '.glfail{margin:10px 0;padding:10px 12px;border-radius:12px;border:1px solid rgba(214,84,60,.65);background:rgba(214,84,60,.16);color:inherit;font-size:13px;line-height:1.4;text-align:left}.glfail p{margin:0 0 4px}.glfail p+p{margin:0;font-size:12px;opacity:.82}.glfail-fixed{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;width:min(92vw,420px);background:#2a1410;color:#f7e9e2;box-shadow:0 8px 30px rgba(0,0,0,.5)}';
+  document.head.appendChild(st);
+  var box = null, kind = '';
+  function show(k) {
+    if (kind === 'gl' && k !== 'gl') return;
+    kind = k; if (k === 'gl') window.__glFailed = true;
+    var tr = /^tr/i.test(navigator.language || ''), m = T[k];
+    if (!box) {
+      box = document.createElement('div'); box.className = 'glfail'; box.setAttribute('role', 'alert');
+      var host = document.querySelector('#loadmsg');
+      if (host && host.getClientRects().length) { if (host.childElementCount) host.parentNode.insertBefore(box, host); else { host.textContent = ''; host.parentNode.insertBefore(box, host.nextSibling); } }
+      else { box.className += ' glfail-fixed'; document.body.appendChild(box); }
+    }
+    box.textContent = '';
+    [tr ? m[0] : m[1], tr ? m[1] : m[0]].forEach(function (s) { var p = document.createElement('p'); p.textContent = s; box.appendChild(p); });
+  }
+  window.__glFatal = show;
+  window.__glClear = function () { if (box && kind === 'net') { box.remove(); box = null; kind = ''; } };
+  // inert stand-in for the renderer when WebGL cannot start, so the menu code below still runs
+  window.__glStub = function (canvas) {
+    var p = new Proxy(function () {}, {
+      get: function (t, k) { return k === 'domElement' ? canvas : k === Symbol.toPrimitive ? function () { return 0; } : k === 'then' ? undefined : p; },
+      set: function () { return true; }, apply: function () { return p; }, construct: function () { return p; }
+    });
+    return p;
+  };
+  setTimeout(function () { if (!window.__three) show('net'); }, 15000);
+})();
+</script>
+
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"},"integrity":{"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js":"sha384-GY5FqjttLCFRt/McQbyaVdCk2O1IQtOeX8Py6NfD89BIAsIyJFRl4UgSXrk2vXAk","https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/utils/BufferGeometryUtils.js":"sha384-wOjwauvHlJO7K6APr7FmMGH2nupQa3Ndzas9bJZhsAMOK055efJud8ns4aYmASKv"}}
 </script>
@@ -3229,7 +3267,6 @@ window.addEventListener('unhandledrejection', e => { window.__errs.push('Promise
   let saved = null; try { saved = JSON.parse(localStorage.getItem('arena.kapadokya.settings') || 'null'); } catch (e) {}
   const tr = q === 'tr' || q === 'en' ? q === 'tr' : saved && (saved.lang === 'tr' || saved.lang === 'en') ? saved.lang === 'tr' : /^tr/i.test(navigator.language || '');
   document.getElementById('loadmsg').textContent = tr ? 'Yükleniyor… 0/1' : 'Loading… 0/1';
-  setTimeout(() => { if (!window.__loaded) document.getElementById('loadmsg').textContent = tr ? 'Three.js yüklenemedi; internet bağlantısını kontrol et.' : 'Three.js could not load; check your connection.'; }, 20000);
 })();
 </script>
 <script>
@@ -3805,8 +3842,9 @@ const CORE = (() => {
 })();
 /*CORE-END*/
 </script>
-<script type="module">
+<script type="module" onerror="window.__glFatal&&__glFatal('net')">
 import * as THREE from 'three';
+window.__three = true; if (window.__glClear) window.__glClear();
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const C = CORE;
@@ -4064,7 +4102,9 @@ function chibi(name, h, onShow) {
   return sp;
 }
 const canvas = $('c');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+let glFail = false, renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); }
+catch (e) { glFail = true; renderer = window.__glStub(canvas); window.__glFatal('gl'); }
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, SET.quality === 'low' ? 1 : 1.5));
 // Arena: dynamic pixel ratio for weak GPUs under the quality tier's cap (re-attached in setQuality, which resets the ratio)
 let arenaPerf = null;
@@ -4080,7 +4120,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 1, 7000);
 scene.fog = new THREE.Fog(0xe8a080, 900, 4200);
 // arena-core v2 render preset: neutral tone mapping, a little room light, gentle bloom (the sun, burner flames, lit envelopes), vignette, grade
-const FX = window.ArenaCore ? ArenaCore.render.setup(renderer, scene, camera, { tonlama: 'neutral', pozlama: 1.08, ortam: 0.1, bloom: { guc: 0.32, esik: 0.88, yaricap: 0.4 }, vinyet: 0.24, grain: 0.03, renk: { doygunluk: 1.08, kontrast: 1.05 } }) : null;
+const FX = window.ArenaCore && !glFail ? ArenaCore.render.setup(renderer, scene, camera, { tonlama: 'neutral', pozlama: 1.08, ortam: 0.1, bloom: { guc: 0.32, esik: 0.88, yaricap: 0.4 }, vinyet: 0.24, grain: 0.03, renk: { doygunluk: 1.08, kontrast: 1.05 } }) : null;
 
 const SKY = {
   dawn0: { top: 0x2c2552, mid: 0x93608f, hor: 0xf3a27c, sun: 0xffa266, sunI: 1.5, hemi: 0xb0a0cc, hemiG: 0x8a6650, hemiI: 1.55, el: 7 },
@@ -4972,7 +5012,7 @@ function dailyInfo(date) {
 function applyDaily(F, D) { F.layers = D.winds.map(L => ({ ...L, v: C.vecOf(L.dir, L.spd) })); }
 function startDaily(date) { const D = dailyInfo(date || todayStr()); startFlight(D.idx, D); }
 function restartFlight() { clearTimeout(G.takeoffTO); clearTimeout(G.hintTO); G.takeoffTO = G.hintTO = null; startFlight(G.idx, G.daily); }
-function startFlight(i, daily) {
+function startFlight(i, daily) { if (glFail) return;
   clearTimeout(G.takeoffTO); clearTimeout(G.hintTO); G.takeoffTO = G.hintTO = null;
   G.daily = daily || null;
   G.idx = i; G.F = C.newFlight(i); C.botReset();
@@ -6430,8 +6470,8 @@ if (SET.quality === 'low') setQuality('low');
 checkAch(true);
 window.__loaded = true;
 // compile every shader before Play is enabled, so the first flight does not stall
-function ready() { if (G.ready) return; G.ready = true; $('loadmsg').textContent = ''; $('b-play').disabled = false; if (!FLAG.auto && G.screen === 'title') $('b-play').focus(); }
-$('loadmsg').textContent = SET.lang === 'tr' ? 'Yükleniyor… 1/2' : 'Loading… 1/2';
+function ready() { if (G.ready || glFail) return; G.ready = true; $('loadmsg').textContent = ''; $('b-play').disabled = false; if (!FLAG.auto && G.screen === 'title') $('b-play').focus(); }
+if (!glFail) $('loadmsg').textContent = SET.lang === 'tr' ? 'Yükleniyor… 1/2' : 'Loading… 1/2';
 try { renderer.compileAsync(scene, camera).then(() => { $('loadmsg').textContent = SET.lang === 'tr' ? 'Yükleniyor… 2/2' : 'Loading… 2/2'; setTimeout(ready, 150); }, ready); } catch (e) { ready(); }
 setTimeout(ready, 8000);
 applyTexts(); auVolumes();
