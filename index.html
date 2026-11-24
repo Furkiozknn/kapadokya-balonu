@@ -2426,6 +2426,7 @@ a.btn { text-decoration: none; }
   function show(k) {
     if (kind === 'gl' && k !== 'gl') return;
     kind = k; if (k === 'gl') window.__glFailed = true;
+    var pb = document.querySelector('#b-play'); if (pb) pb.disabled = true;
     var tr = /^tr/i.test(navigator.language || ''), m = T[k];
     if (!box) {
       box = document.createElement('div'); box.className = 'glfail'; box.setAttribute('role', 'alert');
